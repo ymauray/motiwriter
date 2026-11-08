@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions et échanges
+    url: https://github.com/ymauray/motiwriter/discussions
+    about: Pour une question ou une idée, utilisez les Discussions.
+  - name: Vulnérabilité
+    url: https://github.com/ymauray/motiwriter/security/advisories/new
+    about: Signalez-la en privé, jamais dans une issue publique.

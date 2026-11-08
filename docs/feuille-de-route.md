@@ -2,11 +2,12 @@
 
 ## ✅ Fait (novembre 2026)
 
-- Solution .NET 10 : `Core` (métier), `Web` (Blazor), `Core.Tests` (xUnit).
+- Solution .NET 10 : `Core` (métier), `Infrastructure` (SQLite), `Web` (Blazor), tests xUnit.
 - Modèle « jour écrit / non écrit » et contrat `IWritingJournal`.
 - Calcul des statistiques provisoires : jours écrits, série en cours, plus longue série,
   jours du mois — couvert par des tests.
-- Tableau de bord : titre, phrase d'encouragement, quatre cartes, calendrier des 20 dernières semaines.
+- Tableau de bord : titre, phrase d'encouragement, quatre cartes, calendrier aux cases carrées
+  qui remplit toute la largeur (jusqu'à un an).
 - Charte graphique crème et encre, typographie serif.
 - **Saisie des jours** : bande « Les huit derniers jours » (dont « Aujourd'hui ») et
   calendrier cliquable ; jours futurs refusés.
@@ -16,6 +17,10 @@
   chaque personne ne voit que ses données.
 - Dépôt public [ymauray/motiwriter](https://github.com/ymauray/motiwriter) et
   [site de présentation](https://ymauray.github.io/motiwriter/) publié par GitHub Pages.
+- **Exécutables autonomes** (Linux, macOS, Windows) publiés en release sur tag `vX.Y.Z`
+  (première version : 0.1.1), CI sur chaque pull request, Dependabot.
+- **Déploiement** documenté : serveur Ubuntu, systemd, nginx et Let's Encrypt (README).
+- Dépôt mis aux normes (licence MIT, fichiers communautaires, `main` protégée, AGENTS.md).
 
 ## 🔜 Prochaines étapes
 
@@ -31,7 +36,6 @@
 - **Applications iOS et Android** consommant l'API.
 - **Serveur MCP** (`MotiWriter.Mcp`) pour consulter et noter ses jours d'écriture depuis un assistant.
 - **Authentification de l'API** (jetons) pour les applications mobiles et le serveur MCP.
-- **Déploiement** de l'application web pour la partager (HTTPS, domaine, clés Data Protection).
 
 ## 💭 Idées à discuter
 

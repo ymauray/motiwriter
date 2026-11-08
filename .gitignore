@@ -486,3 +486,7 @@ App_Data/
 *.db
 *.db-shm
 *.db-wal
+
+# Secrets locaux (clés, fichiers de fournisseurs) : jamais dans le dépôt
+private/
+*.p8

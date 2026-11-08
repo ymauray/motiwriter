@@ -279,7 +279,7 @@ server {
 ```bash
 sudo ln -s /etc/nginx/sites-available/motiwriter /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d motiwriter.exemple.ch --redirect   # certificat Let's Encrypt + redirection HTTPS
+sudo certbot --nginx -d motiwriter.exemple.ch             # certificat Let's Encrypt + redirection HTTPS
 sudo ufw allow 'Nginx Full'                                # si le pare-feu ufw est actif
 ```
 

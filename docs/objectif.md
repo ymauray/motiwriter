@@ -19,20 +19,19 @@ de continuer. L'application ne juge pas, elle **constate et encourage**.
 ## Noter ses jours
 
 Une seule action — **cocher ou décocher un jour** — accessible à trois endroits,
-chacun adapté à un usage :
+chacun adapté à un usage. Sur le tableau de bord, ils viennent juste après les statistiques :
 
 | Où | Pour quoi |
 |---|---|
-| Le bouton **« J'ai écrit aujourd'hui »**, sous la phrase d'accueil | Le geste quotidien. Coché, il devient « ✓ Écrit aujourd'hui » ; un clic de plus l'annule. |
+| Le bouton **« J'ai écrit aujourd'hui »**, sous les statistiques | Le geste quotidien. Coché, il devient « ✓ Écrit aujourd'hui » ; un clic de plus l'annule. |
 | La bande **« Cette semaine »** (lundi → dimanche) | Rattraper un oubli récent (« j'ai oublié de noter hier »). Grandes pastilles, faciles à toucher sur téléphone. |
 | Le **calendrier** des vingt dernières semaines | Corriger un jour plus ancien : chaque case se coche ou se décoche d'un clic. |
 
 Les jours futurs ne peuvent pas être cochés.
 
-**Pas de confirmation, mais une annulation.** Après chaque clic, un bandeau
-(« Mardi 3 novembre marqué non écrit. **Annuler** ») reste affiché huit secondes, et ne
-disparaît pas tant que le pointeur ou le focus est dessus. Le geste reste instantané,
-et une erreur se rattrape en un clic.
+**Ni confirmation, ni notification.** Le geste est instantané et son effet se voit
+immédiatement (case, statistiques, historique). Une erreur se corrige simplement en
+cliquant de nouveau sur le même jour.
 
 ## L'historique
 
@@ -41,7 +40,7 @@ Chaque changement est noté, sous la forme :
 > Le mardi 3 novembre a été marqué écrit le dimanche 8 novembre à 19 h 42.
 
 Les cinq dernières modifications figurent sur le tableau de bord ; la page **Historique**
-les présente toutes, de la plus récente à la plus ancienne. Une annulation est une
+les présente toutes, de la plus récente à la plus ancienne. Une correction est une
 modification comme une autre : elle apparaît aussi dans l'historique.
 
 ## Ce que la première version ne fait pas (volontairement)

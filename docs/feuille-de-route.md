@@ -9,7 +9,7 @@
 - Tableau de bord : titre, phrase d'encouragement, quatre cartes, calendrier des 20 dernières semaines.
 - Charte graphique crème et encre, typographie serif.
 - **Saisie des jours** : bouton « J'ai écrit aujourd'hui », bande « Cette semaine »,
-  calendrier cliquable, bandeau « Annuler » ; jours futurs refusés.
+  calendrier cliquable ; jours futurs refusés.
 - **Historique** de chaque modification (tableau de bord et page dédiée).
 - **Stockage SQLite** (`MotiWriter.Infrastructure`) avec schéma versionné.
 - Dépôt public [ymauray/motiwriter](https://github.com/ymauray/motiwriter) et

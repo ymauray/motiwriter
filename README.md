@@ -13,7 +13,7 @@ et un tableau de bord présente le chemin parcouru : jours écrits, séries, cal
 ## Fonctionnalités
 
 - Un clic pour noter qu'on a écrit aujourd'hui ; rattrapage des jours passés depuis la semaine
-  en cours ou le calendrier ; décocher un jour se fait d'un clic, avec « Annuler ».
+  en cours ou le calendrier ; décocher un jour se fait d'un clic.
 - Historique de chaque modification (« Le mardi 3 novembre a été marqué écrit le dimanche 8 novembre à 19 h 42. »).
 - Tableau de bord : nombre de jours écrits, série en cours, plus longue série, jours du mois.
 - Calendrier des vingt dernières semaines, jour par jour.

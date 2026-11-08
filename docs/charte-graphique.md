@@ -60,6 +60,9 @@ Repères :
 
 ## Composants
 
+- **Ordre du tableau de bord** : surtitre, titre et phrase d'accueil (sur toute la largeur),
+  puis les quatre cartes de statistiques, le bouton du jour, la bande « Cette semaine »,
+  le calendrier et les dernières modifications.
 - **Bandeau** : nom de marque à gauche, puis la navigation (« Tableau de bord », « Historique »)
   en italique `--ink-muted` (page active en `--ink`, soulignée en `--accent`), date du jour en
   italique à droite, filet `--rule` en dessous.
@@ -79,8 +82,6 @@ Repères :
   - aujourd'hui : anneau `--accent`
 - **Liste d'historique** (`HistoryList`) : une ligne par modification, séparées par des filets
   `--rule`, précédée d'un petit carré (`--ink-blue` pour « écrit », creux pour « non écrit »).
-- **Bandeau d'annulation** (`UndoToast`) : en bas au centre, fond `--ink`, texte `--paper`,
-  « Annuler » souligné en gras. Seule ombre portée de l'interface, très diffuse.
 - **Colophon** : courte devise centrée en italique (« Écrire un peu, souvent. »).
 
 ## Principes

@@ -56,7 +56,7 @@ Règles métier :
   (`WritingDayInFutureException`).
 - **Chaque changement d'état est historisé** avec sa date et son heure. Cocher un jour déjà
   coché (ou décocher un jour non coché) ne change rien et n'ajoute rien à l'historique.
-- **Annuler, c'est remettre l'état précédent** : l'annulation est elle-même une modification,
+- **Corriger, c'est cliquer de nouveau** : la correction est elle-même une modification,
   visible dans l'historique. L'historique n'est jamais réécrit.
 - Les objets renvoyés sont des `record` simples, directement sérialisables en JSON pour la future API REST.
 
@@ -97,12 +97,12 @@ La base est en mode WAL.
   relative au dossier du projet Web ; `App_Data/` est ignoré par git).
 - `Components/Layout/MainLayout.razor` : bandeau (marque, navigation, date), contenu, colophon.
 - `Components/Pages/Home.razor` : tableau de bord, **interactif** (Blazor Server). Il porte l'état
-  de la page : résumé, cinq dernières modifications, bandeau d'annulation et sa minuterie.
+  de la page : résumé et cinq dernières modifications, rechargés après chaque clic.
 - `Components/Pages/Historique.razor` : historique complet (500 dernières modifications), rendu statique.
 - `Components/Dashboard/` : composants du tableau de bord, sans logique métier, qui signalent
   les clics par un `EventCallback<DateOnly>` :
   `TodayToggle` (bouton du jour), `WeekStrip` (« Cette semaine »), `WritingCalendar`
-  (calendrier cliquable), `HistoryList`, `UndoToast`.
+  (calendrier cliquable), `HistoryList`.
 - `Formatting/FrenchDates.cs` : toutes les formulations françaises (« samedi 1er novembre »,
   « 19 h 42 », phrases d'historique, libellés accessibles).
 - `wwwroot/app.css` : variables de la [charte graphique](charte-graphique.md) et styles globaux.

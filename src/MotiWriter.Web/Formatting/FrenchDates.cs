@@ -28,13 +28,6 @@ public static class FrenchDates
         return $"Le {Day(change.Day, today)} a été marqué {state} le {Day(changedOn, today)} à {Time(change.ChangedAt)}.";
     }
 
-    /// <summary>Message court de confirmation, après un clic.</summary>
-    public static string Confirmation(WritingDayChange change, DateOnly today)
-    {
-        var who = change.Day == today ? "Aujourd'hui" : Capitalize(Day(change.Day, today));
-        return change.Written ? $"{who} marqué écrit." : $"{who} marqué non écrit.";
-    }
-
     /// <summary>Libellé accessible d'une case cliquable du calendrier.</summary>
     public static string ToggleLabel(CalendarDay day, DateOnly today)
     {

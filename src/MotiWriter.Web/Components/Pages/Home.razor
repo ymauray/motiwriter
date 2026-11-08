@@ -1,6 +1,5 @@
 @page "/"
 @rendermode InteractiveServer
-@implements IDisposable
 @inject IDashboardService Dashboard
 @inject IWritingDayService WritingDays
 
@@ -29,10 +28,7 @@
                 }
             }
         </p>
-        <TodayToggle Written="s.WrittenToday" OnToggle="() => ToggleAsync(s.Today)" />
     </section>
-
-    <WeekStrip Week="s.CurrentWeek" Today="s.Today" OnToggle="ToggleAsync" />
 
     <section class="stats" aria-label="Statistiques">
         <StatCard Value="@s.Statistics.TotalDays" Label="jours écrits" Caption="depuis le début" />
@@ -40,6 +36,10 @@
         <StatCard Value="@s.Statistics.LongestStreak" Label="plus longue série" Caption="votre record" />
         <StatCard Value="@s.Statistics.DaysThisMonth" Label="@($"en {s.Today.ToString("MMMM")}")" Caption="@($"sur {FrenchDates.Days(s.Today.Day)}")" />
     </section>
+
+    <TodayToggle Written="s.WrittenToday" OnToggle="() => ToggleAsync(s.Today)" />
+
+    <WeekStrip Week="s.CurrentWeek" Today="s.Today" OnToggle="ToggleAsync" />
 
     <section class="panel">
         <div class="section-head">
@@ -61,17 +61,11 @@
         <HistoryList Changes="_history" Today="s.Today" />
     </section>
 
-    <UndoToast Change="_lastChange" Today="s.Today" OnUndo="UndoAsync" OnDismiss="HideToast"
-               OnPause="CancelToastTimer" OnResume="StartToastTimer" />
 }
 
 @code {
-    private static readonly TimeSpan ToastDuration = TimeSpan.FromSeconds(8);
-
     private DashboardSummary? _summary;
     private IReadOnlyList<WritingDayChange> _history = [];
-    private WritingDayChange? _lastChange;
-    private CancellationTokenSource? _toastTimer;
     private bool _busy;
 
     protected override Task OnInitializedAsync() => ReloadAsync();
@@ -91,9 +85,8 @@
         _busy = true;
         try
         {
-            var change = await WritingDays.ToggleAsync(day);
+            await WritingDays.ToggleAsync(day);
             await ReloadAsync();
-            ShowToast(change);
         }
         catch (WritingDayInFutureException)
         {
@@ -105,72 +98,4 @@
             _busy = false;
         }
     }
-
-    private async Task UndoAsync()
-    {
-        if (_busy || _lastChange is not { } change)
-        {
-            return;
-        }
-        _busy = true;
-        try
-        {
-            HideToast();
-            await WritingDays.SetWrittenAsync(change.Day, !change.Written);
-            await ReloadAsync();
-        }
-        finally
-        {
-            _busy = false;
-        }
-    }
-
-    private void ShowToast(WritingDayChange change)
-    {
-        _lastChange = change;
-        StartToastTimer();
-    }
-
-    private void StartToastTimer()
-    {
-        CancelToastTimer();
-        if (_lastChange is null)
-        {
-            return;
-        }
-        _toastTimer = new CancellationTokenSource();
-        _ = HideToastLaterAsync(_toastTimer.Token);
-    }
-
-    private async Task HideToastLaterAsync(CancellationToken token)
-    {
-        try
-        {
-            await Task.Delay(ToastDuration, token);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-        await InvokeAsync(() =>
-        {
-            _lastChange = null;
-            StateHasChanged();
-        });
-    }
-
-    private void HideToast()
-    {
-        CancelToastTimer();
-        _lastChange = null;
-    }
-
-    private void CancelToastTimer()
-    {
-        _toastTimer?.Cancel();
-        _toastTimer?.Dispose();
-        _toastTimer = null;
-    }
-
-    public void Dispose() => CancelToastTimer();
 }

@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Symboles de débogage intégrés aux DLL : l'exécutable autonome n'a pas de .pdb à côté. -->
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+</Project>

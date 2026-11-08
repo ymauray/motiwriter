@@ -20,4 +20,19 @@
     <UserSecretsId>d75a3993-6cf4-4e49-96c6-bcca2dd16c52</UserSecretsId>
   </PropertyGroup>
 
+  <!--
+    Publication en binaire autonome : `dotnet publish src/MotiWriter.Web -r <rid>`
+    (osx-arm64, linux-x64, win-x64…). Le runtime .NET et ASP.NET Core sont embarqués dans un
+    exécutable unique ; seuls wwwroot/ et les fichiers appsettings*.json restent à côté.
+  -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <!-- La bibliothèque native SQLite (e_sqlite3) est elle aussi incluse dans l'exécutable. -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <!-- Pas de découpage (trimming) : Blazor et l'authentification reposent sur la réflexion. -->
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+
 </Project>

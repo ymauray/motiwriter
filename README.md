@@ -77,6 +77,38 @@ Authentication__Development__Enabled=true \
 dotnet test
 ```
 
+## Binaire autonome
+
+L'application peut être publiée en **un seul exécutable** qui embarque le runtime .NET et
+ASP.NET Core : rien à installer sur la machine cible.
+
+```bash
+dotnet publish src/MotiWriter.Web -c Release -r osx-arm64 -o publish/osx-arm64
+# autres cibles : osx-x64, linux-x64, linux-arm64, win-x64…
+```
+
+Le dossier obtenu (environ 50 Mo) se copie tel quel :
+
+```
+MotiWriter.Web                                   exécutable (runtime, DLL et SQLite inclus)
+appsettings.json                                 configuration
+wwwroot/                                         feuilles de style et scripts
+MotiWriter.Web.staticwebassets.endpoints.json    index des fichiers de wwwroot
+```
+
+```bash
+./publish/osx-arm64/MotiWriter.Web --urls http://localhost:5000
+```
+
+- Les fichiers sont cherchés **à côté de l'exécutable**, quel que soit le dossier courant ; la base
+  est créée dans `App_Data/` à côté de lui (modifiable avec `ConnectionStrings__MotiWriter`).
+- L'exécutable tourne en environnement *Production* : `dotnet user-secrets` n'y est **pas** lu.
+  Les identifiants OAuth se donnent par variables d'environnement, par exemple
+  `Authentication__Discord__ClientId`, `Authentication__Apple__PrivateKey="$(cat AuthKey.p8)"`.
+- Sous Linux, la bibliothèque ICU (`libicu`) doit être installée pour les dates en français.
+- Pour une mise en ligne (HTTPS, proxy, clés Data Protection), voir
+  [docs/authentification.md](docs/authentification.md#mise-en-production).
+
 ## Structure
 
 ```

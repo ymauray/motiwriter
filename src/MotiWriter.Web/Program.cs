@@ -5,7 +5,17 @@ using MotiWriter.Infrastructure;
 using MotiWriter.Web.Authentication;
 using MotiWriter.Web.Components;
 
-var builder = WebApplication.CreateBuilder(args);
+// Exécutable autonome (publication « single-file ») : Assembly.Location est vide. La racine du
+// contenu (appsettings, wwwroot, App_Data) est alors le dossier de l'exécutable, et non le dossier
+// courant, pour que l'application fonctionne quel que soit l'endroit d'où on la lance.
+#pragma warning disable IL3000 // Voulu : c'est justement ce qui signale l'exécutable autonome.
+var singleFile = string.IsNullOrEmpty(typeof(Program).Assembly.Location);
+#pragma warning restore IL3000
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = singleFile ? AppContext.BaseDirectory : null,
+});
 
 var french = new CultureInfo("fr-FR");
 CultureInfo.DefaultThreadCurrentCulture = french;

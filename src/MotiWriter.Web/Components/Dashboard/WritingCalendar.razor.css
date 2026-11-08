@@ -1,36 +1,32 @@
+/* Une colonne de libellés, puis --weeks colonnes égales ; les cases sont carrées
+   (aspect-ratio) et remplissent toute la largeur. Remplissage colonne par colonne. */
 .calendar {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto repeat(var(--weeks, 20), minmax(0, 1fr));
+    grid-template-rows: repeat(7, auto);
+    grid-auto-flow: column;
     gap: 4px;
-    overflow-x: auto;
     padding: 1.5rem;
     background: var(--paper-raised);
     border: 1px solid var(--rule);
     border-radius: 2px;
 }
 
-.weekdays,
-.week {
-    display: grid;
-    grid-template-rows: repeat(7, 1fr);
-    gap: 4px;
-}
-
-.weekdays {
+.label {
+    display: flex;
+    align-items: center;
     padding-right: 0.5rem;
     font-size: 0.72rem;
     font-style: italic;
+    line-height: 1;
     color: var(--ink-muted);
 }
 
-    .weekdays span {
-        height: 1.15rem;
-        line-height: 1.15rem;
-    }
-
 .cell {
     display: block;
-    width: 1.15rem;
-    height: 1.15rem;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 1;
     padding: 0;
     border: 0;
     border-radius: 2px;
@@ -63,3 +59,11 @@
     .cell.today {
         box-shadow: 0 0 0 2px var(--paper-raised), 0 0 0 3px var(--accent);
     }
+
+@media (max-width: 40rem) {
+    .calendar { padding: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cell { transition: none; }
+}

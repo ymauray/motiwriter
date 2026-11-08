@@ -18,7 +18,7 @@
 ## 🔜 Prochaines étapes
 
 1. **Définir les statistiques** du tableau de bord (à préciser selon ce qui motive le plus).
-2. **Remonter plus loin** que vingt semaines dans le calendrier (navigation par mois ou par année).
+2. **Remonter plus loin** qu'un an dans le calendrier (navigation par année).
 3. **Sauvegarde** : exporter et importer ses jours (fichier JSON ou CSV).
 
 ## 🧭 Plus tard

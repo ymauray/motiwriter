@@ -1,29 +1,77 @@
-<div class="calendar">
-    <div class="weekdays" aria-hidden="true">
-        <span>lun.</span><span></span><span>mer.</span><span></span><span>ven.</span><span></span><span>dim.</span>
-    </div>
-    @foreach (var week in Weeks)
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@*
+    Grille : une première colonne pour les noms de jours, puis une colonne par semaine.
+    Le nombre de semaines affichées est calculé côté navigateur (WritingCalendar.razor.js)
+    pour que des carrés d'environ 18 px remplissent exactement la largeur disponible.
+*@
+<div class="calendar" @ref="_element" style="--weeks: @_visible.Count">
+    @foreach (var label in DayLabels)
     {
-        <div class="week">
-            @foreach (var day in week.Days)
-            {
-                var label = FrenchDates.ToggleLabel(day, Today);
-                <button type="button"
-                        class="@ClassFor(day)"
-                        disabled="@day.IsFuture"
-                        aria-pressed="@(day.Written ? "true" : "false")"
-                        aria-label="@label"
-                        title="@label"
-                        @onclick="() => OnToggle.InvokeAsync(day.Date)"></button>
-            }
-        </div>
+        <span class="label" aria-hidden="true">@label</span>
+    }
+    @foreach (var week in _visible)
+    {
+        @foreach (var day in week.Days)
+        {
+            var label = FrenchDates.ToggleLabel(day, Today);
+            <button type="button"
+                    class="@ClassFor(day)"
+                    disabled="@day.IsFuture"
+                    aria-pressed="@(day.Written ? "true" : "false")"
+                    aria-label="@label"
+                    title="@label"
+                    @onclick="() => OnToggle.InvokeAsync(day.Date)"></button>
+        }
     }
 </div>
 
 @code {
+    private static readonly string[] DayLabels = ["lun.", "", "mer.", "", "ven.", "", "dim."];
+
+    /// <summary>Taille visée d'une case, en pixels (avant étirement pour remplir la largeur).</summary>
+    private const double TargetCellSize = 18;
+
+    /// <summary>Espace entre les cases, en pixels (doit correspondre au CSS).</summary>
+    private const double Gap = 4;
+
+    /// <summary>Toutes les semaines disponibles, de la plus ancienne à la semaine en cours.</summary>
     [Parameter, EditorRequired] public IReadOnlyList<CalendarWeek> Weeks { get; set; } = [];
     [Parameter] public DateOnly Today { get; set; }
     [Parameter] public EventCallback<DateOnly> OnToggle { get; set; }
+
+    /// <summary>Nombre de semaines affichées (les plus récentes), ajusté à la largeur.</summary>
+    [Parameter] public int VisibleWeeks { get; set; }
+    [Parameter] public EventCallback<int> VisibleWeeksChanged { get; set; }
+
+    private ElementReference _element;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _observer;
+    private DotNetObjectReference<WritingCalendar>? _self;
+    private IReadOnlyList<CalendarWeek> _visible = [];
+
+    protected override void OnParametersSet()
+    {
+        var count = Math.Clamp(VisibleWeeks, 1, Math.Max(1, Weeks.Count));
+        _visible = Weeks.Skip(Weeks.Count - count).ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+        _self = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Dashboard/WritingCalendar.razor.js");
+        _observer = await _module.InvokeAsync<IJSObjectReference>("observe", _element, _self, TargetCellSize, Gap, Weeks.Count);
+    }
+
+    /// <summary>Appelée par le navigateur quand la largeur permet un autre nombre de semaines.</summary>
+    [JSInvokable]
+    public Task SetVisibleWeeks(int count) =>
+        count == VisibleWeeks ? Task.CompletedTask : VisibleWeeksChanged.InvokeAsync(count);
 
     private string ClassFor(CalendarDay day) => string.Join(' ', new[]
     {
@@ -32,4 +80,25 @@
         day.IsFuture ? "future" : null,
         day.Date == Today ? "today" : null,
     }.Where(c => c is not null));
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_observer is not null)
+            {
+                await _observer.InvokeVoidAsync("dispose");
+                await _observer.DisposeAsync();
+            }
+            if (_module is not null)
+            {
+                await _module.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Le circuit est déjà fermé : le navigateur a fait le ménage.
+        }
+        _self?.Dispose();
+    }
 }

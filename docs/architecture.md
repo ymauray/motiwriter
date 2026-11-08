@@ -103,6 +103,11 @@ La base est en mode WAL.
 - `Components/Dashboard/` : composants du tableau de bord, sans logique métier, qui signalent
   les clics par un `EventCallback<DateOnly>` :
   `WritingCalendar` (calendrier cliquable), `RecentDays` (« Les sept derniers jours »), `HistoryList`.
+- Le tableau de bord charge 53 semaines ; `WritingCalendar` n'affiche que les plus récentes qui
+  tiennent en largeur. Son module JavaScript isolé (`WritingCalendar.razor.js`) mesure le calendrier
+  avec un `ResizeObserver` et renvoie le nombre de semaines au composant ; la grille CSS
+  (colonnes `1fr`, cases en `aspect-ratio: 1`) étire ensuite les cases pour remplir exactement la largeur.
+- `Formatting/FrenchNumbers.cs` : nombres en toutes lettres pour les titres.
 - `Formatting/FrenchDates.cs` : toutes les formulations françaises (« samedi 1er novembre »,
   « 19 h 42 », phrases d'historique, libellés accessibles).
 - `wwwroot/app.css` : variables de la [charte graphique](charte-graphique.md) et styles globaux.

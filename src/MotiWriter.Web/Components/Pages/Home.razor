@@ -39,13 +39,14 @@
 
     <section class="panel">
         <div class="section-head">
-            <h2>Les vingt dernières semaines</h2>
+            <h2>@FrenchNumbers.LastWeeksTitle(_visibleWeeks)</h2>
             <div class="legend">
                 <span class="swatch"></span> silence
                 <span class="swatch written"></span> écrit
             </div>
         </div>
-        <WritingCalendar Weeks="s.Weeks" Today="s.Today" OnToggle="ToggleAsync" />
+        <WritingCalendar Weeks="s.Weeks" Today="s.Today" OnToggle="ToggleAsync"
+                         @bind-VisibleWeeks="_visibleWeeks" />
         <p class="note">Cliquez sur un jour pour le cocher ou le décocher.</p>
     </section>
 
@@ -62,7 +63,13 @@
 }
 
 @code {
+    /// <summary>Semaines chargées : un an, le calendrier n'affiche que celles qui tiennent en largeur.</summary>
+    private const int LoadedWeeks = 53;
+
     private DashboardSummary? _summary;
+
+    // Valeur pour un écran large (page à sa largeur maximale) ; ajustée par le navigateur.
+    private int _visibleWeeks = 42;
     private IReadOnlyList<WritingDayChange> _history = [];
     private bool _busy;
 
@@ -70,7 +77,7 @@
 
     private async Task ReloadAsync()
     {
-        _summary = await Dashboard.GetSummaryAsync(weeks: 20);
+        _summary = await Dashboard.GetSummaryAsync(weeks: LoadedWeeks);
         _history = await WritingDays.GetHistoryAsync(limit: 5);
     }
 

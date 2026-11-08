@@ -74,6 +74,9 @@ Repères :
   arrondis (2px), grand chiffre, libellé en gras, légende en italique.
 - **Calendrier** (`WritingCalendar`) : une colonne par semaine (lundi → dimanche), une case
   par jour, chacune cliquable (léger grossissement au survol, bulle explicative).
+  Les cases, **parfaitement carrées** (~18 px, écart de 4 px), **remplissent toute la largeur** :
+  le nombre de semaines affichées s'adapte à la largeur de l'écran (jusqu'à un an), et le titre
+  le dit en toutes lettres (« Les quarante-trois dernières semaines »).
   - écrit : `--ink-blue`
   - non écrit (« silence ») : `--paper-deep`
   - futur : transparent, contour pointillé `--rule`

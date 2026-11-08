@@ -16,7 +16,7 @@ et un tableau de bord présente le chemin parcouru : jours écrits, séries, cal
   derniers jours ou le calendrier ; décocher un jour se fait d'un clic.
 - Historique de chaque modification, mois par mois (« Le mardi 3 novembre a été marqué écrit le dimanche 8 novembre à 19 h 42. »).
 - Tableau de bord : nombre de jours écrits, série en cours, plus longue série, jours du mois.
-- Calendrier des vingt dernières semaines, jour par jour.
+- Calendrier jour par jour, qui remplit toute la largeur de l'écran (jusqu'à un an).
 - Données enregistrées localement dans un fichier SQLite.
 - Interface en français, sobre, dans un esprit « papier et encre ».
 

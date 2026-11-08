@@ -18,13 +18,11 @@ de continuer. L'application ne juge pas, elle **constate et encourage**.
 
 ## Noter ses jours
 
-Une seule action — **cocher ou décocher un jour** — accessible à trois endroits,
-chacun adapté à un usage. Sur le tableau de bord, ils viennent juste après les statistiques :
+Une seule action — **cocher ou décocher un jour** — accessible à deux endroits du tableau de bord :
 
 | Où | Pour quoi |
 |---|---|
-| Le bouton **« J'ai écrit aujourd'hui »**, sous les statistiques | Le geste quotidien. Coché, il devient « ✓ Écrit aujourd'hui » ; un clic de plus l'annule. |
-| La bande **« Cette semaine »** (lundi → dimanche) | Rattraper un oubli récent (« j'ai oublié de noter hier »). Grandes pastilles, faciles à toucher sur téléphone. |
+| La bande **« Les sept derniers jours »**, dont la dernière case s'appelle « Aujourd'hui » | Le geste quotidien, et le rattrapage d'un oubli récent (« j'ai oublié de noter hier »). Grandes pastilles, faciles à toucher sur téléphone. |
 | Le **calendrier** des vingt dernières semaines | Corriger un jour plus ancien : chaque case se coche ou se décoche d'un clic. |
 
 Les jours futurs ne peuvent pas être cochés.
@@ -40,7 +38,8 @@ Chaque changement est noté, sous la forme :
 > Le mardi 3 novembre a été marqué écrit le dimanche 8 novembre à 19 h 42.
 
 Les cinq dernières modifications figurent sur le tableau de bord ; la page **Historique**
-les présente toutes, de la plus récente à la plus ancienne. Une correction est une
+les présente toutes, regroupées par mois (selon la date de la modification), du plus récent
+au plus ancien. Chaque mois est un bloc repliable : seul le mois en cours est ouvert. Une correction est une
 modification comme une autre : elle apparaît aussi dans l'historique.
 
 ## Ce que la première version ne fait pas (volontairement)

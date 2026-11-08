@@ -29,17 +29,31 @@ public class DashboardServiceTests
     }
 
     [Fact]
-    public async Task Current_week_runs_from_monday_to_sunday_and_ends_the_calendar()
+    public async Task Calendar_ends_with_the_current_week_from_monday_to_sunday()
     {
-        await _journal.SetWrittenAsync(Today.AddDays(-1), true, Now);
-
         var summary = await _service.GetSummaryAsync(weeks: 4);
 
         Assert.Equal(4, summary.Weeks.Count);
-        Assert.Same(summary.Weeks[^1], summary.CurrentWeek);
-        Assert.Equal(new DateOnly(2026, 11, 2), summary.CurrentWeek.Days[0].Date);
-        Assert.Equal(Today, summary.CurrentWeek.Days[6].Date);
-        Assert.True(summary.CurrentWeek.Days[5].Written);
+        Assert.Equal(new DateOnly(2026, 11, 2), summary.Weeks[^1].Days[0].Date);
+        Assert.Equal(Today, summary.Weeks[^1].Days[6].Date);
+    }
+
+    [Fact]
+    public async Task Last_seven_days_end_today()
+    {
+        await _journal.SetWrittenAsync(Today.AddDays(-1), true, Now);
+
+        // Mercredi 4 novembre : du jeudi 29 octobre au mercredi 4 novembre.
+        await _journal.SetWrittenAsync(new DateOnly(2026, 10, 29), true, Now);
+        var wednesday = new DashboardService(_journal, new FakeTimeProvider(Now.AddDays(-4)));
+
+        var days = (await wednesday.GetSummaryAsync()).LastSevenDays;
+
+        Assert.Equal(7, days.Count);
+        Assert.Equal(new DateOnly(2026, 10, 29), days[0].Date);
+        Assert.Equal(new DateOnly(2026, 11, 4), days[^1].Date);
+        Assert.True(days[0].Written);
+        Assert.All(days, d => Assert.False(d.IsFuture));
     }
 
     [Fact]
@@ -48,7 +62,7 @@ public class DashboardServiceTests
         // Mercredi 4 novembre : jeudi → dimanche sont à venir.
         var service = new DashboardService(_journal, new FakeTimeProvider(Now.AddDays(-4)));
 
-        var week = (await service.GetSummaryAsync(weeks: 1)).CurrentWeek;
+        var week = (await service.GetSummaryAsync(weeks: 1)).Weeks[^1];
 
         Assert.Equal([false, false, false, true, true, true, true], week.Days.Select(d => d.IsFuture));
     }

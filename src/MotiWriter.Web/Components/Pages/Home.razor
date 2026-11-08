@@ -37,10 +37,6 @@
         <StatCard Value="@s.Statistics.DaysThisMonth" Label="@($"en {s.Today.ToString("MMMM")}")" Caption="@($"sur {FrenchDates.Days(s.Today.Day)}")" />
     </section>
 
-    <TodayToggle Written="s.WrittenToday" OnToggle="() => ToggleAsync(s.Today)" />
-
-    <WeekStrip Week="s.CurrentWeek" Today="s.Today" OnToggle="ToggleAsync" />
-
     <section class="panel">
         <div class="section-head">
             <h2>Les vingt dernières semaines</h2>
@@ -52,6 +48,8 @@
         <WritingCalendar Weeks="s.Weeks" Today="s.Today" OnToggle="ToggleAsync" />
         <p class="note">Cliquez sur un jour pour le cocher ou le décocher.</p>
     </section>
+
+    <RecentDays Days="s.LastSevenDays" Today="s.Today" OnToggle="ToggleAsync" />
 
     <section class="panel">
         <div class="section-head">

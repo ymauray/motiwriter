@@ -16,8 +16,15 @@ public sealed class DashboardService(IWritingJournal journal, TimeProvider timeP
             today,
             days.Contains(today),
             WritingStatisticsCalculator.Compute(days, today),
-            BuildCalendar(days, today, weeks));
+            BuildCalendar(days, today, weeks),
+            BuildLastDays(days, today, count: 7));
     }
+
+    private static List<CalendarDay> BuildLastDays(IReadOnlySet<DateOnly> days, DateOnly today, int count) =>
+        Enumerable.Range(0, count)
+            .Select(i => today.AddDays(i - count + 1))
+            .Select(date => new CalendarDay(date, days.Contains(date), IsFuture: false))
+            .ToList();
 
     private static List<CalendarWeek> BuildCalendar(IReadOnlySet<DateOnly> days, DateOnly today, int weeks)
     {

@@ -41,6 +41,13 @@ public static class FrenchDates
             : $"{label} — non écrit · cliquer pour marquer écrit";
     }
 
+    /// <summary>« Novembre 2026 ».</summary>
+    public static string Month(int year, int month) =>
+        Capitalize(new DateOnly(year, month, 1).ToString("MMMM yyyy", French));
+
+    /// <summary>« 1 modification », « 12 modifications ».</summary>
+    public static string Changes(int count) => count > 1 ? $"{count} modifications" : $"{count} modification";
+
     /// <summary>« 1 jour », « 97 jours ».</summary>
     public static string Days(int count) => count > 1 ? $"{count} jours" : $"{count} jour";
 

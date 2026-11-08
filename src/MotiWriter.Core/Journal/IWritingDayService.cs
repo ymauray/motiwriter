@@ -14,4 +14,10 @@ public interface IWritingDayService
 
     /// <summary>Dernières modifications, de la plus récente à la plus ancienne.</summary>
     Task<IReadOnlyList<WritingDayChange>> GetHistoryAsync(int limit = 50, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Historique regroupé par mois de modification (selon l'heure locale enregistrée),
+    /// du mois le plus récent au plus ancien.
+    /// </summary>
+    Task<IReadOnlyList<HistoryMonth>> GetHistoryByMonthAsync(int limit = 10_000, CancellationToken cancellationToken = default);
 }

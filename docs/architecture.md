@@ -43,9 +43,9 @@ La solution utilise le format `MotiWriter.slnx`. Le SDK est fixé par `global.js
 
 | Dossier | Contenu |
 |---|---|
-| `Journal/` | `IWritingJournal` : contrat de **stockage** (lire les jours, fixer l'état d'un jour, lire l'historique). `IWritingDayService` / `WritingDayService` : **saisie** (cocher, décocher, inverser, historique) avec les règles métier. `WritingDayChange` : une entrée d'historique. `InMemoryWritingJournal` : implémentation en mémoire pour les tests. |
+| `Journal/` | `IWritingJournal` : contrat de **stockage** (lire les jours, fixer l'état d'un jour, lire l'historique). `IWritingDayService` / `WritingDayService` : **saisie** (cocher, décocher, inverser) et **historique** (liste, ou regroupé par mois avec `HistoryMonth`), avec les règles métier. `WritingDayChange` : une entrée d'historique. `InMemoryWritingJournal` : implémentation en mémoire pour les tests. |
 | `Statistics/` | `WritingStatistics` (record) et `WritingStatisticsCalculator` : **calcul pur**, sans effet de bord, qui prend un ensemble de dates et « aujourd'hui ». |
-| `Dashboard/` | `IDashboardService` / `DashboardService` : assemble tout ce que la page d'accueil affiche dans un seul objet `DashboardSummary` (aujourd'hui écrit ou non, statistiques, calendrier des N dernières semaines, semaine en cours). |
+| `Dashboard/` | `IDashboardService` / `DashboardService` : assemble tout ce que la page d'accueil affiche dans un seul objet `DashboardSummary` (aujourd'hui écrit ou non, statistiques, calendrier des N dernières semaines, sept derniers jours). |
 | `ServiceCollectionExtensions.cs` | `AddMotiWriterCore()` : enregistre les services métier et `TimeProvider.System`. |
 
 Règles métier :
@@ -98,11 +98,11 @@ La base est en mode WAL.
 - `Components/Layout/MainLayout.razor` : bandeau (marque, navigation, date), contenu, colophon.
 - `Components/Pages/Home.razor` : tableau de bord, **interactif** (Blazor Server). Il porte l'état
   de la page : résumé et cinq dernières modifications, rechargés après chaque clic.
-- `Components/Pages/Historique.razor` : historique complet (500 dernières modifications), rendu statique.
+- `Components/Pages/Historique.razor` : historique complet, un bloc `<details>` repliable par mois
+  (seul le mois en cours est ouvert), rendu statique, sans JavaScript.
 - `Components/Dashboard/` : composants du tableau de bord, sans logique métier, qui signalent
   les clics par un `EventCallback<DateOnly>` :
-  `TodayToggle` (bouton du jour), `WeekStrip` (« Cette semaine »), `WritingCalendar`
-  (calendrier cliquable), `HistoryList`.
+  `WritingCalendar` (calendrier cliquable), `RecentDays` (« Les sept derniers jours »), `HistoryList`.
 - `Formatting/FrenchDates.cs` : toutes les formulations françaises (« samedi 1er novembre »,
   « 19 h 42 », phrases d'historique, libellés accessibles).
 - `wwwroot/app.css` : variables de la [charte graphique](charte-graphique.md) et styles globaux.

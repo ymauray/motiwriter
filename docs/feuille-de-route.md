@@ -8,9 +8,9 @@
   jours du mois — couvert par des tests.
 - Tableau de bord : titre, phrase d'encouragement, quatre cartes, calendrier des 20 dernières semaines.
 - Charte graphique crème et encre, typographie serif.
-- **Saisie des jours** : bouton « J'ai écrit aujourd'hui », bande « Cette semaine »,
+- **Saisie des jours** : bande « Les sept derniers jours » (dont « Aujourd'hui ») et
   calendrier cliquable ; jours futurs refusés.
-- **Historique** de chaque modification (tableau de bord et page dédiée).
+- **Historique** de chaque modification (tableau de bord et page dédiée, regroupée par mois).
 - **Stockage SQLite** (`MotiWriter.Infrastructure`) avec schéma versionné.
 - Dépôt public [ymauray/motiwriter](https://github.com/ymauray/motiwriter) et
   [site de présentation](https://ymauray.github.io/motiwriter/) publié par GitHub Pages.

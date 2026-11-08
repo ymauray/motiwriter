@@ -89,4 +89,25 @@ public class WritingDayServiceTests
 
         Assert.True(change.Written);
     }
+
+    [Fact]
+    public async Task History_is_grouped_by_month_of_change_newest_first()
+    {
+        // 31 octobre, 23 h 30 à UTC+1 : encore en octobre en heure locale.
+        var clock = new FakeTimeProvider(new DateTimeOffset(2026, 10, 31, 22, 30, 0, TimeSpan.Zero));
+        clock.SetLocalTimeZone(TimeZoneInfo.CreateCustomTimeZone("UTC+1", TimeSpan.FromHours(1), "UTC+1", "UTC+1"));
+        var service = new WritingDayService(new InMemoryWritingJournal(), clock);
+        await service.ToggleAsync(new DateOnly(2026, 10, 30));
+        await service.ToggleAsync(new DateOnly(2026, 10, 31));
+
+        // Une heure plus tard : 1er novembre, 0 h 30 à UTC+1.
+        clock.Advance(TimeSpan.FromHours(1));
+        await service.ToggleAsync(new DateOnly(2026, 10, 31));
+
+        var months = await service.GetHistoryByMonthAsync();
+
+        Assert.Equal([(2026, 11), (2026, 10)], months.Select(m => (m.Year, m.Month)));
+        Assert.Single(months[0].Changes);
+        Assert.Equal([new DateOnly(2026, 10, 31), new DateOnly(2026, 10, 30)], months[1].Changes.Select(c => c.Day));
+    }
 }

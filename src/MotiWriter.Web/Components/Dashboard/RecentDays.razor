@@ -1,26 +1,35 @@
-<section class="week" aria-labelledby="week-title">
-    <h2 id="week-title">Cette semaine</h2>
+<section class="recent" aria-labelledby="recent-title">
+    <h2 id="recent-title">Les sept derniers jours</h2>
     <div class="days">
-        @foreach (var day in Week.Days)
+        @foreach (var day in Days)
         {
+            var isToday = day.Date == Today;
             var label = FrenchDates.ToggleLabel(day, Today);
             <button type="button"
                     class="@ClassFor(day)"
-                    disabled="@day.IsFuture"
                     aria-pressed="@(day.Written ? "true" : "false")"
                     aria-label="@label"
                     title="@label"
                     @onclick="() => OnToggle.InvokeAsync(day.Date)">
-                <span class="dow">@day.Date.ToString("ddd")</span>
+                @if (isToday)
+                {
+                    <span class="dow"><span class="long">Aujourd'hui</span><span class="short" aria-hidden="true">Auj.</span></span>
+                }
+                else
+                {
+                    <span class="dow">@day.Date.ToString("ddd")</span>
+                }
                 <span class="num">@day.Date.Day</span>
                 <span class="state" aria-hidden="true">@(day.Written ? "✓" : "·")</span>
             </button>
         }
     </div>
+    <p class="note">Un clic coche le jour, un autre le décoche.</p>
 </section>
 
 @code {
-    [Parameter, EditorRequired] public CalendarWeek Week { get; set; } = default!;
+    /// <summary>Les jours à afficher, du plus ancien à aujourd'hui.</summary>
+    [Parameter, EditorRequired] public IReadOnlyList<CalendarDay> Days { get; set; } = [];
     [Parameter] public DateOnly Today { get; set; }
     [Parameter] public EventCallback<DateOnly> OnToggle { get; set; }
 

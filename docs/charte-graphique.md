@@ -61,17 +61,15 @@ Repères :
 ## Composants
 
 - **Ordre du tableau de bord** : surtitre, titre et phrase d'accueil (sur toute la largeur),
-  puis les quatre cartes de statistiques, le bouton du jour, la bande « Cette semaine »,
-  le calendrier et les dernières modifications.
+  puis les quatre cartes de statistiques, le calendrier, la bande « Les sept derniers jours »
+  et les dernières modifications.
 - **Bandeau** : nom de marque à gauche, puis la navigation (« Tableau de bord », « Historique »)
   en italique `--ink-muted` (page active en `--ink`, soulignée en `--accent`), date du jour en
   italique à droite, filet `--rule` en dessous.
-- **Bouton du jour** (`TodayToggle`) : non coché, contour `--ink-blue` sur `--paper-raised`
-  avec « ✎ J'ai écrit aujourd'hui » ; coché, plein `--ink-blue` avec « ✓ Écrit aujourd'hui ».
-  Une légende en italique dessous (« Quelques mots suffisent. » / « Un clic de plus pour annuler. »).
-- **Bande « Cette semaine »** (`WeekStrip`) : sept pastilles égales (jour abrégé en italique,
-  numéro en Cormorant, ✓ ou ·). Écrit : plein `--ink-blue` ; non écrit : `--paper-raised`
-  bordé `--rule` ; futur : pointillés, non cliquable ; aujourd'hui : anneau `--accent`.
+- **Bande « Les sept derniers jours »** (`RecentDays`) : sept pastilles égales, se terminant
+  par aujourd'hui (jour abrégé en italique, numéro en Cormorant, ✓ ou ·). La dernière porte
+  « Aujourd'hui » en gras (« Auj. » sur petit écran). Écrit : plein `--ink-blue` ; non écrit :
+  `--paper-raised` bordé `--rule` ; aujourd'hui : anneau `--accent`.
 - **Carte de statistique** (`StatCard`) : fond `--paper-raised`, bordure `--rule`, coins à peine
   arrondis (2px), grand chiffre, libellé en gras, légende en italique.
 - **Calendrier** (`WritingCalendar`) : une colonne par semaine (lundi → dimanche), une case
@@ -80,6 +78,9 @@ Repères :
   - non écrit (« silence ») : `--paper-deep`
   - futur : transparent, contour pointillé `--rule`
   - aujourd'hui : anneau `--accent`
+- **Mois de l'historique** : blocs repliables (`<details>`) sur `--paper-raised` bordés `--rule`,
+  avec un chevron, le mois en Cormorant italique et le nombre de modifications à droite en
+  italique `--ink-muted`. Seul le mois en cours est ouvert.
 - **Liste d'historique** (`HistoryList`) : une ligne par modification, séparées par des filets
   `--rule`, précédée d'un petit carré (`--ink-blue` pour « écrit », creux pour « non écrit »).
 - **Colophon** : courte devise centrée en italique (« Écrire un peu, souvent. »).

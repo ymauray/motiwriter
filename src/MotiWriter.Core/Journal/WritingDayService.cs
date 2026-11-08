@@ -27,6 +27,17 @@ public sealed class WritingDayService(IWritingJournal journal, TimeProvider time
         return journal.GetHistoryAsync(limit, cancellationToken);
     }
 
+    public async Task<IReadOnlyList<HistoryMonth>> GetHistoryByMonthAsync(int limit = 10_000, CancellationToken cancellationToken = default)
+    {
+        var history = await GetHistoryAsync(limit, cancellationToken);
+
+        // L'historique arrive déjà du plus récent au plus ancien : GroupBy conserve cet ordre.
+        return history
+            .GroupBy(c => (c.ChangedAt.Year, c.ChangedAt.Month))
+            .Select(g => new HistoryMonth(g.Key.Year, g.Key.Month, g.ToList()))
+            .ToList();
+    }
+
     private static void EnsureNotInFuture(DateOnly day, DateTimeOffset now)
     {
         var today = DateOnly.FromDateTime(now.DateTime);

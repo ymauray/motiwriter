@@ -39,7 +39,7 @@ dotnet user-secrets set "Authentication:Twitch:ClientSecret"  "…"
 dotnet user-secrets set "Authentication:Google:ClientId"      "…"
 dotnet user-secrets set "Authentication:Google:ClientSecret"  "…"
 
-dotnet user-secrets set "Authentication:Apple:ClientId"       "…"   # Services ID, ex. ch.exemple.motiwriter
+dotnet user-secrets set "Authentication:Apple:ClientId"       "…"   # identifiant du Services ID (pas de l'App ID), ex. ch.exemple.motiwriter.web
 dotnet user-secrets set "Authentication:Apple:TeamId"         "…"
 dotnet user-secrets set "Authentication:Apple:KeyId"          "…"
 dotnet user-secrets set "Authentication:Apple:PrivateKey"     "$(cat AuthKey_XXXXXXXXXX.p8)"
@@ -85,25 +85,100 @@ En production, ajoutez les mêmes chemins sur votre domaine.
 ### Apple
 
 Sign in with Apple demande un **compte Apple Developer payant** et un **vrai domaine en HTTPS** :
-Apple refuse `localhost` comme adresse de retour. Pour tester en local, passez par un tunnel HTTPS
-avec un domaine fixe, par exemple le domaine gratuit de ngrok :
+Apple refuse `localhost` comme adresse de retour. Pour tester en local, on passe par un tunnel
+HTTPS à domaine fixe, par exemple le domaine statique gratuit de ngrok.
+
+Apple distingue trois éléments, tous dans <https://developer.apple.com/account> →
+*Certificates, Identifiers & Profiles* :
+
+| Élément | Rôle | Secret correspondant |
+|---|---|---|
+| **App ID** | l'« application » à laquelle Sign in with Apple est rattaché | — |
+| **Services ID** | l'identifiant utilisé par un **site web** ; porte le domaine et l'adresse de retour | `ClientId` |
+| **Key** (`.p8`) | clé privée qui signe le secret client (généré par MotiWriter) | `KeyId`, `PrivateKey` |
+
+Le *Team ID* (10 caractères) figure en haut à droite du portail → `TeamId`.
+
+#### 1. App ID
+
+1. *Identifiers* → **+** → **App IDs** → *Continue* → type **App** → *Continue*.
+2. *Description* : `MotiWriter` ; *Bundle ID* explicite, par ex. `ch.exemple.motiwriter`.
+3. Dans *Capabilities*, cochez **Sign In with Apple**, puis *Edit* :
+   - laissez **Enable as a primary App ID** ;
+   - laissez **vide** le champ *Server-to-Server Notification Endpoint* (inutile ici).
+4. *Save*, *Continue*, *Register*.
+
+> Cet écran de l'App ID ne contient **ni domaine ni adresse de retour** : c'est normal, ils se
+> déclarent sur le Services ID (étape 2).
+
+#### 2. Services ID (le `ClientId`)
+
+1. *Identifiers* → **+** → **Services IDs** → *Continue*.
+2. *Description* : `MotiWriter Web` ; *Identifier* : **différent de l'App ID**, par ex.
+   `ch.exemple.motiwriter.web`. *Continue*, *Register*.
+3. Dans la liste *Identifiers*, basculez le filtre en haut à droite sur **Services IDs**, ouvrez
+   celui que vous venez de créer, cochez **Sign In with Apple** → **Configure** :
+   - *Primary App ID* : l'App ID de l'étape 1 ;
+   - *Domains and Subdomains* : le domaine public, **sans** `https://` ni chemin
+     (ex. `mon-domaine.ngrok-free.dev`) ;
+   - *Return URLs* : `https://<domaine>/signin-apple`.
+4. *Next*, *Done*, *Continue*, **Save**.
+
+#### 3. Clé privée
+
+1. *Keys* → **+** → nom `MotiWriter`, cochez **Sign In with Apple** → *Configure* → choisissez
+   l'App ID de l'étape 1 → *Save*, *Continue*, *Register*.
+2. **Téléchargez** le fichier `AuthKey_XXXXXXXXXX.p8` : Apple ne le propose **qu'une seule fois**.
+   Notez le *Key ID* (les 10 caractères du nom du fichier).
+
+#### 4. Secrets
+
+```bash
+cd src/MotiWriter.Web
+dotnet user-secrets set "Authentication:Apple:ClientId"   "ch.exemple.motiwriter.web"   # Services ID
+dotnet user-secrets set "Authentication:Apple:TeamId"     "XXXXXXXXXX"
+dotnet user-secrets set "Authentication:Apple:KeyId"      "XXXXXXXXXX"
+dotnet user-secrets set "Authentication:Apple:PrivateKey" "$(cat ~/chemin/AuthKey_XXXXXXXXXX.p8)"
+```
+
+Rangez ensuite le `.p8` en lieu sûr, hors du dépôt. Le bouton « Continuer avec Apple »
+n'apparaît que si les quatre valeurs sont présentes.
+
+#### 5. Lancer avec ngrok
+
+Réservez un domaine statique gratuit dans le tableau de bord ngrok (*Domains*), puis, dans deux
+terminaux :
 
 ```bash
 dotnet run --project src/MotiWriter.Web --launch-profile https
 ngrok http http://localhost:5006 --url=<domaine>.ngrok-free.dev
 ```
 
-Ouvrez alors l'application **par l'adresse ngrok** (et non `localhost`), du début à la fin de
-la connexion. L'application tient compte des en-têtes `X-Forwarded-*` envoyés par ngrok.
+Ouvrez l'application **par l'adresse ngrok** (`https://<domaine>.ngrok-free.dev`), et non par
+`localhost`, du début à la fin de la connexion : les cookies de connexion sont liés au domaine.
+ngrok transmet en HTTP à l'application ; celle-ci retrouve l'adresse publique HTTPS grâce aux
+en-têtes `X-Forwarded-*` (sans eux, elle redirigerait vers `https://<domaine>:7096` et tournerait
+en boucle). Si un ancien cookie gêne, utilisez une fenêtre de navigation privée.
 
-1. <https://developer.apple.com/account> → **Identifiers** → créez un *App ID* avec la capacité
-   *Sign in with Apple*.
-2. Créez un *Services ID* (c'est le `ClientId`), activez *Sign in with Apple*, configurez-le :
-   domaine et adresse de retour `https://<domaine>/signin-apple`.
-3. **Keys** → créez une clé avec *Sign in with Apple* ; téléchargez le fichier `.p8`
-   (une seule fois possible) et notez son *Key ID*. Le *Team ID* figure en haut à droite du portail.
-4. Apple ne transmet le nom de la personne **qu'à la toute première connexion** ; ensuite,
-   MotiWriter garde le nom déjà connu (« Plume anonyme » si la personne a refusé de le partager).
+#### Le nom de la personne
+
+Apple n'inscrit pas le nom dans le jeton : il l'envoie à part (champ de formulaire `user`) et
+**seulement lors de la toute première autorisation**. MotiWriter le lit à ce moment-là ; ensuite,
+il garde le nom déjà connu (« Plume anonyme » si la personne a refusé de le partager).
+
+Pour qu'Apple le renvoie (par ex. pour un compte créé sans nom) : sur <https://account.apple.com>
+→ *Connexion et sécurité* → *Se connecter avec Apple* → MotiWriter → **Arrêter d'utiliser**,
+puis reconnectez-vous. Le compte MotiWriter est retrouvé (même identifiant Apple) et renommé.
+
+#### Erreurs fréquentes
+
+| Symptôme | Cause probable |
+|---|---|
+| Pas de bouton Apple | une des quatre valeurs manque dans les secrets |
+| `invalid_client` chez Apple | `ClientId` = App ID au lieu du Services ID, ou clé non rattachée au bon App ID |
+| `invalid_request` / adresse de retour refusée | domaine ou *Return URL* du Services ID différent de l'adresse ngrok |
+| Redirections en boucle | application ouverte par `localhost`, ou proxy non local (voir *Production*) |
+| « Plume anonyme » | première autorisation déjà consommée : voir ci-dessus |
 
 ## Connexion de développement
 

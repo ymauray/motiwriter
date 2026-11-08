@@ -1,0 +1,22 @@
+@inherits LayoutComponentBase
+
+<div class="page">
+    <header class="masthead">
+        <a class="brand" href="/">MotiWriter</a>
+        <span class="masthead-date">@DateTime.Now.ToString("dddd d MMMM yyyy")</span>
+    </header>
+
+    <main>
+        @Body
+    </main>
+
+    <footer class="colophon">
+        Écrire un peu, souvent.
+    </footer>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    Une erreur inattendue est survenue.
+    <a href="." class="reload">Recharger</a>
+    <span class="dismiss">🗙</span>
+</div>

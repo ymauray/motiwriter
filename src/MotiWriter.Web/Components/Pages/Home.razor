@@ -1,0 +1,75 @@
+@page "/"
+@using MotiWriter.Core.Dashboard
+@inject IDashboardService Dashboard
+
+<PageTitle>MotiWriter</PageTitle>
+
+@if (_summary is { } s)
+{
+    <section class="hero">
+        <p class="eyebrow">Tableau de bord</p>
+        <h1>MotiWriter</h1>
+        <p class="lede">
+            Vous avez écrit <em>@s.Statistics.TotalDays jours</em>.
+            @if (s.Statistics.CurrentStreak > 1)
+            {
+                <span>Votre série en cours dure depuis @s.Statistics.CurrentStreak jours — continuez.</span>
+            }
+            else
+            {
+                <span>Quelques mots aujourd'hui suffisent à relancer la série.</span>
+            }
+        </p>
+    </section>
+
+    <section class="stats" aria-label="Statistiques">
+        <StatCard Value="@s.Statistics.TotalDays" Label="jours écrits" Caption="depuis le début" />
+        <StatCard Value="@s.Statistics.CurrentStreak" Label="série en cours" Caption="jours consécutifs" />
+        <StatCard Value="@s.Statistics.LongestStreak" Label="plus longue série" Caption="votre record" />
+        <StatCard Value="@s.Statistics.DaysThisMonth" Label="@($"en {s.Today.ToString("MMMM")}")" Caption="@($"sur {s.Today.Day} jours")" />
+    </section>
+
+    <section class="calendar-section">
+        <div class="section-head">
+            <h2>Les vingt dernières semaines</h2>
+            <div class="legend">
+                <span class="cell"></span> silence
+                <span class="cell written"></span> écrit
+            </div>
+        </div>
+
+        <div class="calendar" role="img" aria-label="Calendrier des jours d'écriture">
+            <div class="weekdays">
+                <span>lun.</span><span></span><span>mer.</span><span></span><span>ven.</span><span></span><span>dim.</span>
+            </div>
+            @foreach (var week in s.Weeks)
+            {
+                <div class="week">
+                    @foreach (var day in week.Days)
+                    {
+                        <span class="@CellClass(day, s.Today)"
+                              title="@(day.Date.ToString("dddd d MMMM") + (day.Written ? " — écrit" : ""))"></span>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+}
+
+@code {
+    private DashboardSummary? _summary;
+
+    private static string CellClass(CalendarDay day, DateOnly today) =>
+        string.Join(' ', new[]
+        {
+            "cell",
+            day.Written ? "written" : null,
+            day.IsFuture ? "future" : null,
+            day.Date == today ? "today" : null,
+        }.Where(c => c is not null));
+
+    protected override async Task OnInitializedAsync()
+    {
+        _summary = await Dashboard.GetSummaryAsync(weeks: 20);
+    }
+}

@@ -1,0 +1,125 @@
+.hero {
+    padding: 4rem 0 2.5rem;
+    max-width: 44rem;
+}
+
+.eyebrow {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+}
+
+.lede {
+    margin: 1.5rem 0 0;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+}
+
+    .lede em {
+        font-style: italic;
+        color: var(--ink);
+    }
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1rem;
+}
+
+.calendar-section {
+    margin: 3.5rem 0 4rem;
+}
+
+.section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-style: italic;
+    font-size: 1.75rem;
+    color: var(--ink);
+}
+
+.legend {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+}
+
+    .legend .cell:nth-of-type(2) {
+        margin-left: 0.75rem;
+    }
+
+.calendar {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding: 1.5rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+}
+
+.weekdays,
+.week {
+    display: grid;
+    grid-template-rows: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.weekdays {
+    padding-right: 0.5rem;
+    font-size: 0.72rem;
+    font-style: italic;
+    color: var(--ink-muted);
+}
+
+    .weekdays span {
+        height: 1.15rem;
+        line-height: 1.15rem;
+    }
+
+.cell {
+    display: inline-block;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 2px;
+    background: var(--paper-deep);
+}
+
+    .cell.written {
+        background: var(--ink-blue);
+    }
+
+    .cell.future {
+        background: transparent;
+        outline: 1px dashed var(--rule);
+        outline-offset: -1px;
+    }
+
+    .cell.today {
+        box-shadow: 0 0 0 2px var(--paper-raised), 0 0 0 3px var(--accent);
+    }

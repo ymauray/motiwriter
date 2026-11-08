@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MotiWriter.Core/MotiWriter.Core.csproj" />
+    <Project Path="src/MotiWriter.Web/MotiWriter.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MotiWriter.Core.Tests/MotiWriter.Core.Tests.csproj" />
+  </Folder>
+</Solution>

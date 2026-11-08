@@ -1,0 +1,14 @@
+<article class="stat">
+    <span class="value">@Value</span>
+    <span class="label">@Label</span>
+    @if (!string.IsNullOrEmpty(Caption))
+    {
+        <span class="caption">@Caption</span>
+    }
+</article>
+
+@code {
+    [Parameter, EditorRequired] public int Value { get; set; }
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter] public string? Caption { get; set; }
+}

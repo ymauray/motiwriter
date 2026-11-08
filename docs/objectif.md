@@ -46,7 +46,8 @@ modification comme une autre : elle apparaît aussi dans l'historique.
 
 - **Pas de saisie du nombre de mots.** C'est un choix : on valorise le geste d'écrire,
   pas le volume. Cette option pourra être envisagée plus tard.
-- **Pas de comptes utilisateurs** : l'application est pensée, pour l'instant, pour une seule personne.
+- **Pas de mot de passe** : on se connecte avec un compte Discord, Twitch, Google ou Apple
+  (voir [Authentification](authentification.md)). Chaque personne ne voit que ses propres jours.
 - **Pas d'objectifs chiffrés ni de rappels.**
 
 ## Ton

@@ -1,0 +1,64 @@
+@page "/connexion"
+@attribute [AllowAnonymous]
+@inject LoginProviders Providers
+
+<PageTitle>Connexion · MotiWriter</PageTitle>
+
+<section class="signin">
+    <p class="eyebrow">Connexion</p>
+    <h1>Bienvenue</h1>
+    <p class="lede">
+        Connectez-vous avec un compte que vous avez déjà.
+        MotiWriter ne stocke aucun mot de passe et ne vous demande pas votre adresse e-mail.
+    </p>
+
+    @if (!string.IsNullOrEmpty(Erreur))
+    {
+        <p class="error" role="alert">La connexion n'a pas abouti. Vous pouvez réessayer, ou choisir un autre compte.</p>
+    }
+
+    @if (Providers.All.Count == 0 && !Providers.DevelopmentLoginEnabled)
+    {
+        <p class="empty">
+            Aucun fournisseur de connexion n'est configuré pour l'instant.
+            La marche à suivre est décrite dans <code>docs/authentification.md</code>.
+        </p>
+    }
+    else
+    {
+        <div class="providers">
+            @foreach (var provider in Providers.All)
+            {
+                <form method="post" action="connexion/@provider.Scheme">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+                    <button type="submit" class="provider">
+                        <span>Continuer avec <strong>@provider.DisplayName</strong></span>
+                        <span class="arrow" aria-hidden="true">→</span>
+                    </button>
+                </form>
+            }
+            @if (Providers.DevelopmentLoginEnabled)
+            {
+                <form method="post" action="connexion/developpement">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+                    <button type="submit" class="provider development">
+                        <span>Compte de développement</span>
+                        <span class="arrow" aria-hidden="true">→</span>
+                    </button>
+                </form>
+            }
+        </div>
+    }
+
+    <p class="note">
+        Un compte est créé à votre première connexion. Chaque fournisseur mène à un compte distinct :
+        revenez toujours par le même.
+    </p>
+</section>
+
+@code {
+    [SupplyParameterFromQuery(Name = "ReturnUrl")] private string? ReturnUrl { get; set; }
+    [SupplyParameterFromQuery(Name = "erreur")] private string? Erreur { get; set; }
+}

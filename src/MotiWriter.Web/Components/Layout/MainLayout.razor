@@ -3,11 +3,24 @@
 <div class="page">
     <header class="masthead">
         <a class="brand" href="">MotiWriter</a>
-        <nav aria-label="Navigation principale">
-            <NavLink href="" Match="NavLinkMatch.All">Tableau de bord</NavLink>
-            <NavLink href="historique">Historique</NavLink>
-        </nav>
+        <AuthorizeView>
+            <Authorized>
+                <nav aria-label="Navigation principale">
+                    <NavLink href="" Match="NavLinkMatch.All">Tableau de bord</NavLink>
+                    <NavLink href="historique">Historique</NavLink>
+                </nav>
+            </Authorized>
+        </AuthorizeView>
         <span class="masthead-date">@DateTime.Now.ToString("dddd d MMMM yyyy")</span>
+        <AuthorizeView>
+            <Authorized>
+                <form class="account" method="post" action="deconnexion">
+                    <AntiforgeryToken />
+                    <span class="who">@context.User.Identity?.Name</span>
+                    <button type="submit" class="signout">Se déconnecter</button>
+                </form>
+            </Authorized>
+        </AuthorizeView>
     </header>
 
     <main>

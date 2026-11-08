@@ -1,3 +1,4 @@
+using MotiWriter.Core.Accounts;
 using MotiWriter.Core.Journal;
 using MotiWriter.Infrastructure.Sqlite;
 
@@ -5,6 +6,8 @@ namespace MotiWriter.Infrastructure.Tests;
 
 public sealed class SqliteWritingJournalTests : IDisposable
 {
+    private static readonly UserId Alice = new(1);
+
     private static readonly DateOnly Day = new(2026, 11, 3);
     private static readonly DateTimeOffset At = new(2026, 11, 8, 19, 42, 5, TimeSpan.FromHours(1));
 
@@ -27,35 +30,35 @@ public sealed class SqliteWritingJournalTests : IDisposable
     {
         var journal = NewJournal();
 
-        Assert.Empty(await journal.GetWritingDaysAsync());
-        Assert.Empty(await journal.GetHistoryAsync(10));
+        Assert.Empty(await journal.GetWritingDaysAsync(Alice));
+        Assert.Empty(await journal.GetHistoryAsync(Alice, 10));
     }
 
     [Fact]
     public async Task Days_and_history_survive_a_new_instance()
     {
-        await NewJournal().SetWrittenAsync(Day, true, At);
+        await NewJournal().SetWrittenAsync(Alice, Day, true, At);
 
         var reopened = NewJournal();
 
-        Assert.True(await reopened.IsWrittenAsync(Day));
-        Assert.Equal([Day], await reopened.GetWritingDaysAsync());
-        Assert.Equal([new WritingDayChange(Day, true, At)], await reopened.GetHistoryAsync(10));
+        Assert.True(await reopened.IsWrittenAsync(Alice, Day));
+        Assert.Equal([Day], await reopened.GetWritingDaysAsync(Alice));
+        Assert.Equal([new WritingDayChange(Day, true, At)], await reopened.GetHistoryAsync(Alice, 10));
     }
 
     [Fact]
     public async Task Unmarking_removes_the_day_and_is_recorded()
     {
         var journal = NewJournal();
-        await journal.SetWrittenAsync(Day, true, At);
+        await journal.SetWrittenAsync(Alice, Day, true, At);
 
-        var changed = await journal.SetWrittenAsync(Day, false, At.AddMinutes(1));
+        var changed = await journal.SetWrittenAsync(Alice, Day, false, At.AddMinutes(1));
 
         Assert.True(changed);
-        Assert.False(await journal.IsWrittenAsync(Day));
+        Assert.False(await journal.IsWrittenAsync(Alice, Day));
         Assert.Equal(
             [new WritingDayChange(Day, false, At.AddMinutes(1)), new WritingDayChange(Day, true, At)],
-            await journal.GetHistoryAsync(10));
+            await journal.GetHistoryAsync(Alice, 10));
     }
 
     [Fact]
@@ -63,11 +66,11 @@ public sealed class SqliteWritingJournalTests : IDisposable
     {
         var journal = NewJournal();
 
-        Assert.True(await journal.SetWrittenAsync(Day, true, At));
-        Assert.False(await journal.SetWrittenAsync(Day, true, At));
-        Assert.False(await journal.SetWrittenAsync(Day.AddDays(-1), false, At));
+        Assert.True(await journal.SetWrittenAsync(Alice, Day, true, At));
+        Assert.False(await journal.SetWrittenAsync(Alice, Day, true, At));
+        Assert.False(await journal.SetWrittenAsync(Alice, Day.AddDays(-1), false, At));
 
-        Assert.Single(await journal.GetHistoryAsync(10));
+        Assert.Single(await journal.GetHistoryAsync(Alice, 10));
     }
 
     [Fact]
@@ -76,10 +79,10 @@ public sealed class SqliteWritingJournalTests : IDisposable
         var journal = NewJournal();
         for (var i = 0; i < 5; i++)
         {
-            await journal.SetWrittenAsync(Day.AddDays(-i), true, At.AddMinutes(i));
+            await journal.SetWrittenAsync(Alice, Day.AddDays(-i), true, At.AddMinutes(i));
         }
 
-        var history = await journal.GetHistoryAsync(2);
+        var history = await journal.GetHistoryAsync(Alice, 2);
 
         Assert.Equal([Day.AddDays(-4), Day.AddDays(-3)], history.Select(c => c.Day));
     }

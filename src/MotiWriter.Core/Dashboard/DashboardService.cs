@@ -1,3 +1,4 @@
+using MotiWriter.Core.Accounts;
 using MotiWriter.Core.Journal;
 using MotiWriter.Core.Statistics;
 
@@ -5,13 +6,13 @@ namespace MotiWriter.Core.Dashboard;
 
 public sealed class DashboardService(IWritingJournal journal, TimeProvider timeProvider) : IDashboardService
 {
-    public async Task<DashboardSummary> GetSummaryAsync(int weeks = 20, int recentDays = 8, CancellationToken cancellationToken = default)
+    public async Task<DashboardSummary> GetSummaryAsync(UserId user, int weeks = 20, int recentDays = 8, CancellationToken cancellationToken = default)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(weeks, 1);
         ArgumentOutOfRangeException.ThrowIfLessThan(recentDays, 1);
 
         var today = DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime);
-        var days = await journal.GetWritingDaysAsync(cancellationToken);
+        var days = await journal.GetWritingDaysAsync(user, cancellationToken);
 
         return new DashboardSummary(
             today,

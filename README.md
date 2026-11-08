@@ -17,7 +17,8 @@ et un tableau de bord présente le chemin parcouru : jours écrits, séries, cal
 - Historique de chaque modification, mois par mois (« Le mardi 3 novembre a été marqué écrit le dimanche 8 novembre à 19 h 42. »).
 - Tableau de bord : nombre de jours écrits, série en cours, plus longue série, jours du mois.
 - Calendrier jour par jour, qui remplit toute la largeur de l'écran (jusqu'à un an).
-- Données enregistrées localement dans un fichier SQLite.
+- Connexion avec Discord, Twitch, Google ou Apple, sans mot de passe ; chaque personne ne voit que ses jours.
+- Données enregistrées dans un fichier SQLite.
 - Interface en français, sobre, dans un esprit « papier et encre ».
 
 Le métier est séparé de l'interface pour pouvoir être exposé plus tard en API REST
@@ -57,6 +58,19 @@ ConnectionStrings__MotiWriter="Data Source=/chemin/vers/motiwriter.db" \
   dotnet run --project src/MotiWriter.Web --launch-profile http
 ```
 
+## Connexion
+
+Sans configuration, la page de connexion ne propose aucun fournisseur. Deux possibilités :
+
+- configurer un ou plusieurs fournisseurs OAuth avec `dotnet user-secrets`
+  (marche à suivre : [docs/authentification.md](docs/authentification.md)) ;
+- ou, pour développer, activer le compte de développement :
+
+```bash
+Authentication__Development__Enabled=true \
+  dotnet run --project src/MotiWriter.Web --launch-profile https
+```
+
 ## Tests
 
 ```bash
@@ -83,4 +97,5 @@ site/                         Site de présentation (GitHub Pages)
 - [Objectif](docs/objectif.md)
 - [Charte graphique](docs/charte-graphique.md)
 - [Architecture](docs/architecture.md)
+- [Authentification](docs/authentification.md)
 - [Feuille de route](docs/feuille-de-route.md)

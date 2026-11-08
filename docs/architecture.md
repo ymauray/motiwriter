@@ -43,12 +43,18 @@ La solution utilise le format `MotiWriter.slnx`. Le SDK est fixé par `global.js
 
 | Dossier | Contenu |
 |---|---|
+| `Accounts/` | `UserId`, `UserAccount`, `ExternalIdentity`. `IUserAccountStore` : stockage des comptes et des connexions externes. `IAccountService` / `AccountService` : retrouve ou crée le compte à la connexion, rafraîchit le nom sans jamais l'effacer. |
 | `Journal/` | `IWritingJournal` : contrat de **stockage** (lire les jours, fixer l'état d'un jour, lire l'historique). `IWritingDayService` / `WritingDayService` : **saisie** (cocher, décocher, inverser) et **historique** (liste, ou regroupé par mois avec `HistoryMonth`), avec les règles métier. `WritingDayChange` : une entrée d'historique. `InMemoryWritingJournal` : implémentation en mémoire pour les tests. |
 | `Statistics/` | `WritingStatistics` (record) et `WritingStatisticsCalculator` : **calcul pur**, sans effet de bord, qui prend un ensemble de dates et « aujourd'hui ». |
 | `Dashboard/` | `IDashboardService` / `DashboardService` : assemble tout ce que la page d'accueil affiche dans un seul objet `DashboardSummary` (aujourd'hui écrit ou non, statistiques, calendrier des N dernières semaines, huit derniers jours). |
 | `ServiceCollectionExtensions.cs` | `AddMotiWriterCore()` : enregistre les services métier et `TimeProvider.System`. |
 
 Règles métier :
+
+- **Toutes les données appartiennent à un compte** : chaque méthode de `IWritingJournal`,
+  `IWritingDayService` et `IDashboardService` prend un `UserId` explicite. C'est l'hôte (Web,
+  future API) qui le tire de la session authentifiée.
+- **Un compte = une connexion (fournisseur, identifiant)** ; pas de fusion par adresse e-mail.
 
 - **Un jour d'écriture est une `DateOnly`.** « Aujourd'hui » est calculé dans le fuseau local,
   via `TimeProvider` (injecté, donc testable).
@@ -64,6 +70,10 @@ Seule dépendance externe : `Microsoft.Extensions.DependencyInjection.Abstractio
 
 ## MotiWriter.Infrastructure
 
+- `SqliteDatabase` ouvre les connexions (clés étrangères activées) et applique les migrations
+  au premier accès ; il est partagé par les deux stockages.
+- `SqliteUserAccountStore` implémente `IUserAccountStore`. Le tout premier compte créé adopte
+  les données « non réclamées » (`user_id = 0`) héritées du schéma version 1.
 - `SqliteWritingJournal` implémente `IWritingJournal` avec `Microsoft.Data.Sqlite`
   (pas d'ORM : deux tables, requêtes SQL explicites). Le changement d'état et son entrée
   d'historique sont écrits dans **la même transaction**.
@@ -73,18 +83,35 @@ Seule dépendance externe : `Microsoft.Extensions.DependencyInjection.Abstractio
 - `AddMotiWriterSqlite(connectionString, baseDirectory)` enregistre le journal, résout un chemin
   relatif depuis `baseDirectory` et crée le dossier du fichier si besoin.
 
-Schéma (version 1) :
+Schéma (version 2) :
 
 ```sql
+CREATE TABLE user_account (
+    id           INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    display_name TEXT    NOT NULL,
+    email        TEXT,                     -- jamais demandé aux fournisseurs pour l'instant
+    created_at   TEXT    NOT NULL
+);
+
+CREATE TABLE external_login (
+    provider TEXT    NOT NULL,             -- Discord, Twitch, Google, Apple
+    subject  TEXT    NOT NULL,             -- identifiant stable chez le fournisseur
+    user_id  INTEGER NOT NULL REFERENCES user_account (id) ON DELETE CASCADE,
+    PRIMARY KEY (provider, subject)
+) WITHOUT ROWID;
+
 CREATE TABLE writing_day (
-    day TEXT NOT NULL PRIMARY KEY          -- AAAA-MM-JJ
+    user_id INTEGER NOT NULL,
+    day     TEXT    NOT NULL,              -- AAAA-MM-JJ
+    PRIMARY KEY (user_id, day)
 ) WITHOUT ROWID;
 
 CREATE TABLE writing_day_change (
     id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     day        TEXT    NOT NULL,           -- AAAA-MM-JJ
     written    INTEGER NOT NULL,           -- 1 = écrit, 0 = non écrit
-    changed_at TEXT    NOT NULL            -- ISO 8601 avec décalage horaire
+    changed_at TEXT    NOT NULL,           -- ISO 8601 avec décalage horaire
+    user_id    INTEGER NOT NULL DEFAULT 0
 );
 ```
 
@@ -95,7 +122,13 @@ La base est en mode WAL.
 - `Program.cs` : culture `fr-FR`, `AddMotiWriterCore()`, `AddMotiWriterSqlite(...)` avec la
   chaîne de connexion `ConnectionStrings:MotiWriter` (par défaut `Data Source=App_Data/motiwriter.db`,
   relative au dossier du projet Web ; `App_Data/` est ignoré par git).
-- `Components/Layout/MainLayout.razor` : bandeau (marque, navigation, date), contenu, colophon.
+- `Authentication/` : `AuthenticationSetup` (cookie de session, cookie externe temporaire, et
+  chaque fournisseur OAuth activé seulement s'il est configuré), `AuthenticationEndpoints`
+  (`POST /connexion/{fournisseur}`, `GET /connexion/retour`, `POST /deconnexion`), extensions de
+  `ClaimsPrincipal` (`GetUserId()`). Détails : [Authentification](authentification.md).
+- `Components/Pages/Connexion.razor` : page de connexion (un bouton par fournisseur configuré).
+  Le tableau de bord et l'historique portent `[Authorize]` ; sans session, on est redirigé vers `/connexion`.
+- `Components/Layout/MainLayout.razor` : bandeau (marque, navigation, date, nom et « Se déconnecter »), contenu, colophon.
 - `Components/Pages/Home.razor` : tableau de bord, **interactif** (Blazor Server). Il porte l'état
   de la page : résumé et cinq dernières modifications, rechargés après chaque clic.
 - `Components/Pages/Historique.razor` : historique complet, un bloc `<details>` repliable par mois

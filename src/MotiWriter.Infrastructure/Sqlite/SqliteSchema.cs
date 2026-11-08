@@ -9,6 +9,12 @@ namespace MotiWriter.Infrastructure.Sqlite;
 /// </summary>
 internal static class SqliteSchema
 {
+    /// <summary>
+    /// Propriétaire des données saisies avant l'arrivée des comptes (schéma version 1).
+    /// Elles sont adoptées par le tout premier compte créé.
+    /// </summary>
+    public const long UnclaimedUserId = 0;
+
     private static readonly string[] Migrations =
     [
         // Version 1 : jours écrits et historique des modifications.
@@ -23,6 +29,39 @@ internal static class SqliteSchema
             written    INTEGER NOT NULL,            -- 1 = écrit, 0 = non écrit
             changed_at TEXT    NOT NULL             -- ISO 8601 avec décalage horaire
         );
+        """,
+
+        // Version 2 : comptes, connexions OAuth, et données propres à chaque compte.
+        // Les données existantes sont rattachées au compte 0 (« non réclamées »).
+        """
+        CREATE TABLE user_account (
+            id           INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            display_name TEXT    NOT NULL,
+            email        TEXT,
+            created_at   TEXT    NOT NULL            -- ISO 8601 avec décalage horaire
+        );
+
+        CREATE TABLE external_login (
+            provider TEXT    NOT NULL,              -- Google, Discord, Twitch, Apple
+            subject  TEXT    NOT NULL,              -- identifiant stable chez le fournisseur
+            user_id  INTEGER NOT NULL REFERENCES user_account (id) ON DELETE CASCADE,
+            PRIMARY KEY (provider, subject)
+        ) WITHOUT ROWID;
+
+        CREATE INDEX ix_external_login_user ON external_login (user_id);
+
+        CREATE TABLE writing_day_v2 (
+            user_id INTEGER NOT NULL,
+            day     TEXT    NOT NULL,
+            PRIMARY KEY (user_id, day)
+        ) WITHOUT ROWID;
+
+        INSERT INTO writing_day_v2 (user_id, day) SELECT 0, day FROM writing_day;
+        DROP TABLE writing_day;
+        ALTER TABLE writing_day_v2 RENAME TO writing_day;
+
+        ALTER TABLE writing_day_change ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0;
+        CREATE INDEX ix_writing_day_change_user ON writing_day_change (user_id, id);
         """,
     ];
 

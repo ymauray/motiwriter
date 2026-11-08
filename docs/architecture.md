@@ -67,6 +67,13 @@ Choix notables :
 La page d'accueil est actuellement en rendu statique côté serveur ; l'interactivité Blazor
 Server est activée dans l'application et sera utilisée pour les actions (marquer un jour).
 
+## Site de présentation
+
+Le dossier `site/` contient une page HTML statique (avec sa capture `apercu.png`) qui présente
+le projet. Elle reprend la charte graphique et n'a aucune dépendance au code .NET.
+Le workflow `.github/workflows/pages.yml` la publie sur GitHub Pages à chaque modification
+de `site/` sur `main` : <https://ymauray.github.io/motiwriter/>.
+
 ## Conventions
 
 - Code, noms de types et de membres en **anglais** ; commentaires, documentation et

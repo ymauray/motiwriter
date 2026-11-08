@@ -6,6 +6,8 @@ MotiWriter est une application qui aide à garder l'envie d'écrire en montrant 
 déjà accompli. On note simplement les jours où l'on a écrit — quelques mots suffisent —
 et un tableau de bord présente le chemin parcouru : jours écrits, séries, calendrier.
 
+🌐 Site de présentation : <https://ymauray.github.io/motiwriter/>
+
 > 🚧 Projet en phase de maquette : les données affichées sont fictives et ne sont pas encore enregistrées.
 
 ## Fonctionnalités
@@ -25,8 +27,8 @@ Le métier est séparé de l'interface pour pouvoir être exposé plus tard en A
 ## Démarrer en développement
 
 ```bash
-git clone <url-du-depot>
-cd MotiWriter
+git clone https://github.com/ymauray/motiwriter.git
+cd motiwriter
 
 dotnet build
 dotnet run --project src/MotiWriter.Web --launch-profile http
@@ -57,6 +59,7 @@ src/
 tests/
   MotiWriter.Core.Tests/    Tests unitaires du métier (xUnit)
 docs/                       Documentation du projet
+site/                       Site de présentation (GitHub Pages)
 ```
 
 ## Documentation

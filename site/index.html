@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MotiWriter — Écrire un peu, souvent</title>
+    <meta name="description" content="MotiWriter aide à garder l'envie d'écrire en montrant ce qu'on a déjà accompli. Application libre en .NET 10." />
+    <meta property="og:title" content="MotiWriter — Écrire un peu, souvent" />
+    <meta property="og:description" content="Notez les jours où vous écrivez, et voyez le chemin parcouru." />
+    <meta property="og:image" content="apercu.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" />
+    <style>
+        :root {
+            --paper: #f8f3e7;
+            --paper-raised: #fcf9f1;
+            --paper-deep: #ece4d1;
+            --rule: #e0d6c0;
+            --ink: #16202f;
+            --ink-soft: #33405a;
+            --ink-muted: #6a7285;
+            --ink-blue: #24395a;
+            --accent: #3d5a80;
+            --font-display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+            --font-body: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+            color-scheme: light;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: 1.0625rem;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        a { color: var(--accent); text-underline-offset: 0.18em; }
+        a:hover { color: var(--ink-blue); }
+
+        ::selection { background: var(--ink-blue); color: var(--paper); }
+
+        .wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* Bandeau */
+        .masthead {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.75rem 0 1.25rem;
+            border-bottom: 1px solid var(--rule);
+        }
+        .brand {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--ink);
+            text-decoration: none;
+        }
+        .masthead nav { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .masthead nav a {
+            color: var(--ink-muted);
+            font-style: italic;
+            text-decoration: none;
+        }
+        .masthead nav a:hover { color: var(--ink); }
+
+        /* En-tête */
+        .hero { padding: 5rem 0 3rem; max-width: 46rem; }
+        .eyebrow {
+            margin: 0 0 0.75rem;
+            font-size: 0.8rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        h1 {
+            margin: 0;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: clamp(3.25rem, 9vw, 6rem);
+            line-height: 0.95;
+            letter-spacing: -0.01em;
+        }
+        .hero .motto {
+            margin: 0.75rem 0 0;
+            font-family: var(--font-display);
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+            color: var(--ink-soft);
+        }
+        .lede {
+            margin: 1.75rem 0 0;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: var(--ink-soft);
+        }
+        .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.25rem; }
+        .button {
+            display: inline-block;
+            padding: 0.7rem 1.4rem;
+            border: 1px solid var(--ink-blue);
+            border-radius: 2px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .button.primary { background: var(--ink-blue); color: var(--paper); }
+        .button.primary:hover { background: var(--ink); color: var(--paper); }
+        .button.secondary { color: var(--ink-blue); }
+        .button.secondary:hover { background: var(--paper-raised); }
+
+        /* Aperçu */
+        figure.preview { margin: 0 0 1rem; }
+        figure.preview img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+            background: var(--paper-raised);
+        }
+        figure.preview figcaption {
+            margin-top: 0.75rem;
+            font-style: italic;
+            font-size: 0.9rem;
+            color: var(--ink-muted);
+            text-align: center;
+        }
+
+        /* Sections */
+        section.block {
+            padding: 4rem 0;
+            border-top: 1px solid var(--rule);
+            display: grid;
+            grid-template-columns: 16rem minmax(0, 1fr);
+            gap: 2rem 3rem;
+        }
+        section.block:first-of-type { border-top: none; }
+        h2 {
+            margin: 0;
+            font-family: var(--font-display);
+            font-weight: 500;
+            font-style: italic;
+            font-size: 2rem;
+            line-height: 1.15;
+        }
+        .block-body { min-width: 0; }
+        .block-body > p:first-child { margin-top: 0; }
+        .block-body p { max-width: 42rem; color: var(--ink-soft); }
+        .block-body strong { color: var(--ink); }
+
+        blockquote {
+            margin: 2rem 0 0;
+            padding: 0 0 0 1.25rem;
+            border-left: 2px solid var(--accent);
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 1.5rem;
+            line-height: 1.35;
+            color: var(--ink);
+            max-width: 38rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+            gap: 1rem;
+        }
+        .cards.pairs { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+        .card {
+            padding: 1.5rem;
+            background: var(--paper-raised);
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+        }
+        .card h3 {
+            margin: 0 0 0.4rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+        .card p { margin: 0; font-size: 0.97rem; color: var(--ink-soft); }
+        .card .num {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            line-height: 1;
+            margin-bottom: 0.75rem;
+            color: var(--ink-blue);
+        }
+
+        ul.plain { list-style: none; margin: 0; padding: 0; max-width: 42rem; }
+        ul.plain li {
+            padding: 0.65rem 0;
+            border-bottom: 1px solid var(--rule);
+            color: var(--ink-soft);
+        }
+        ul.plain li:last-child { border-bottom: none; }
+        .tag {
+            display: inline-block;
+            min-width: 5.5rem;
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        pre {
+            margin: 1.5rem 0 0;
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            background: var(--paper-raised);
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--ink);
+        }
+        code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+        p code {
+            font-size: 0.9em;
+            padding: 0.1em 0.3em;
+            background: var(--paper-deep);
+            border-radius: 2px;
+        }
+
+        .colophon {
+            border-top: 1px solid var(--rule);
+            padding: 2rem 0 2.5rem;
+            text-align: center;
+            color: var(--ink-muted);
+        }
+        .colophon .motto {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 1.25rem;
+            margin: 0 0 0.5rem;
+        }
+        .colophon p { margin: 0; font-size: 0.9rem; }
+
+        @media (max-width: 48rem) {
+            section.block { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; padding: 3rem 0; }
+            .hero { padding: 3rem 0 2rem; }
+        }
+        @media (max-width: 40rem) {
+            .wrap { padding: 0 1rem; }
+            .masthead { flex-direction: column; gap: 0.5rem; }
+            .masthead nav { gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <header class="masthead">
+            <a class="brand" href="#">MotiWriter</a>
+            <nav aria-label="Sections">
+                <a href="#intention">Intention</a>
+                <a href="#pour-qui">Pour qui</a>
+                <a href="#etat">État du projet</a>
+                <a href="#sources">Sources</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero">
+                <p class="eyebrow">Une petite application pour écrire</p>
+                <h1>MotiWriter</h1>
+                <p class="motto">Écrire un peu, souvent.</p>
+                <p class="lede">
+                    MotiWriter aide à garder l'envie d'écrire en vous montrant ce que vous avez déjà accompli.
+                    Vous notez simplement les jours où vous avez écrit — quelques mots suffisent —
+                    et un tableau de bord vous montre le chemin parcouru.
+                </p>
+                <div class="actions">
+                    <a class="button primary" href="https://github.com/ymauray/motiwriter">Voir les sources sur GitHub</a>
+                    <a class="button secondary" href="#intention">Découvrir l'intention</a>
+                </div>
+            </section>
+
+            <figure class="preview">
+                <img src="apercu.png" width="2560" height="1740"
+                     alt="Le tableau de bord de MotiWriter : titre, quatre statistiques (jours écrits, série en cours, plus longue série, jours du mois) et un calendrier des vingt dernières semaines." />
+                <figcaption>Le tableau de bord, dans sa version maquette (données fictives).</figcaption>
+            </figure>
+
+            <section class="block" id="intention">
+                <h2>L'intention</h2>
+                <div class="block-body">
+                    <p>
+                        Écrire régulièrement compte plus qu'écrire beaucoup. Quelques phrases chaque jour
+                        entretiennent l'habitude ; et voir le chemin parcouru donne envie de continuer.
+                    </p>
+                    <p>
+                        MotiWriter <strong>ne compte pas les mots</strong> et ne fixe pas d'objectifs.
+                        Il se contente de <strong>constater et d'encourager</strong> : un jour est écrit, ou il ne l'est pas.
+                        Les jours sans écriture ne sont pas des échecs — dans le calendrier, ils s'appellent simplement
+                        <em>silence</em>.
+                    </p>
+                    <blockquote>« Quelques mots aujourd'hui suffisent à relancer la série. »</blockquote>
+                </div>
+            </section>
+
+            <section class="block" id="pour-qui">
+                <h2>À qui ça s'adresse</h2>
+                <div class="block-body">
+                    <div class="cards pairs">
+                        <article class="card">
+                            <h3>Les auteurs en chemin</h3>
+                            <p>Celles et ceux qui écrivent un roman, des nouvelles ou des poèmes, et veulent tenir sur la durée.</p>
+                        </article>
+                        <article class="card">
+                            <h3>Les carnets et journaux</h3>
+                            <p>Pour qui tient un journal, un carnet de bord ou un blog, et aimerait y revenir plus souvent.</p>
+                        </article>
+                        <article class="card">
+                            <h3>Les écrits au long cours</h3>
+                            <p>Mémoire, thèse, documentation : les projets où l'on avance un peu chaque jour.</p>
+                        </article>
+                        <article class="card">
+                            <h3>Les découragés du compteur</h3>
+                            <p>Pour qui les objectifs de mots sont devenus une pression plutôt qu'un moteur.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="block" id="comment">
+                <h2>Comment ça marche</h2>
+                <div class="block-body">
+                    <div class="cards">
+                        <article class="card">
+                            <span class="num">1</span>
+                            <h3>Vous écrivez</h3>
+                            <p>Où vous voulez, ce que vous voulez. Quelques mots suffisent.</p>
+                        </article>
+                        <article class="card">
+                            <span class="num">2</span>
+                            <h3>Vous notez le jour</h3>
+                            <p>Un geste, sans chiffre à saisir : la journée compte.</p>
+                        </article>
+                        <article class="card">
+                            <span class="num">3</span>
+                            <h3>Vous voyez le chemin</h3>
+                            <p>Jours écrits, séries, record et calendrier : ce que vous avez déjà accompli.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="block" id="etat">
+                <h2>État du projet</h2>
+                <div class="block-body">
+                    <p>
+                        MotiWriter en est au stade de la <strong>maquette</strong> : le tableau de bord existe,
+                        mais affiche des données fictives qui ne sont pas encore enregistrées.
+                    </p>
+                    <ul class="plain">
+                        <li><span class="tag">Fait</span> Tableau de bord, statistiques, calendrier, charte graphique</li>
+                        <li><span class="tag">Ensuite</span> Enregistrement des jours (SQLite), bouton « J'ai écrit aujourd'hui »</li>
+                        <li><span class="tag">Plus tard</span> API REST, applications iOS et Android, serveur MCP</li>
+                    </ul>
+                    <p>
+                        La <a href="https://github.com/ymauray/motiwriter/blob/main/docs/feuille-de-route.md">feuille de route</a>
+                        détaille les étapes.
+                    </p>
+                </div>
+            </section>
+
+            <section class="block" id="sources">
+                <h2>Les sources</h2>
+                <div class="block-body">
+                    <p>
+                        Le code est public sur GitHub :
+                        <a href="https://github.com/ymauray/motiwriter">github.com/ymauray/motiwriter</a>.
+                    </p>
+                    <p>
+                        L'application est écrite en <strong>.NET 10</strong> avec une interface <strong>Blazor</strong>.
+                        Le métier est séparé de l'interface, pour pouvoir l'exposer plus tard en API REST et en serveur MCP.
+                        Pour la lancer en local, il suffit du SDK .NET 10 :
+                    </p>
+<pre><code>git clone https://github.com/ymauray/motiwriter.git
+cd motiwriter
+dotnet run --project src/MotiWriter.Web --launch-profile http
+# → http://localhost:5006</code></pre>
+                    <p>
+                        Pour aller plus loin :
+                        <a href="https://github.com/ymauray/motiwriter/blob/main/docs/objectif.md">objectif</a>,
+                        <a href="https://github.com/ymauray/motiwriter/blob/main/docs/architecture.md">architecture</a>,
+                        <a href="https://github.com/ymauray/motiwriter/blob/main/docs/charte-graphique.md">charte graphique</a>.
+                    </p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="colophon">
+            <p class="motto">Écrire un peu, souvent.</p>
+            <p>MotiWriter · <a href="https://github.com/ymauray/motiwriter">sources sur GitHub</a></p>
+        </footer>
+    </div>
+</body>
+</html>

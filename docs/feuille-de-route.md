@@ -9,6 +9,8 @@
   jours du mois — couvert par des tests.
 - Tableau de bord : titre, phrase d'encouragement, quatre cartes, calendrier des 20 dernières semaines.
 - Charte graphique crème et encre, typographie serif.
+- Dépôt public [ymauray/motiwriter](https://github.com/ymauray/motiwriter) et
+  [site de présentation](https://ymauray.github.io/motiwriter/) publié par GitHub Pages.
 
 ## 🔜 Prochaines étapes
 
@@ -17,7 +19,6 @@
    (par exemple `MotiWriter.Infrastructure`) pour garder Core indépendant.
 2. **Marquer un jour** : bouton « J'ai écrit aujourd'hui » ; clic sur une case du calendrier
    pour corriger un jour passé.
-3. **Gestion de versions** : initialiser git et publier sur GitHub.
 
 ## 🧭 Plus tard
 

@@ -334,3 +334,4 @@ site/                         Site de présentation (GitHub Pages)
 - [Architecture](docs/architecture.md)
 - [Authentification](docs/authentification.md)
 - [Feuille de route](docs/feuille-de-route.md)
+- [Contribuer (humains et agents IA)](AGENTS.md) : ordre de lecture, règles, pièges connus

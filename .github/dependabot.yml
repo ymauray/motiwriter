@@ -1,0 +1,70 @@
+# Mises à jour automatiques des dépendances : Dependabot ouvre une pull request par groupe,
+# que la CI compile et teste avant fusion.
+version: 2
+
+updates:
+  # Actions utilisées par les workflows (.github/workflows/*.yml)
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Zurich
+    commit-message:
+      prefix: "Actions"
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # Paquets NuGet de la solution (src/ et tests/)
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Zurich
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "NuGet"
+    ignore:
+      # Les paquets Microsoft suivent la version de .NET : on reste sur .NET 10
+      # (le passage à une nouvelle version de .NET se fera à la main).
+      - dependency-name: "Microsoft.AspNetCore.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Microsoft.Extensions.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Microsoft.Data.Sqlite"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "AspNet.Security.OAuth.*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      authentification:
+        patterns:
+          - "AspNet.Security.OAuth.*"
+          - "Microsoft.AspNetCore.Authentication.*"
+      tests:
+        patterns:
+          - "xunit*"
+          - "Microsoft.NET.Test.Sdk"
+          - "coverlet.*"
+          - "Microsoft.Extensions.TimeProvider.Testing"
+      runtime:
+        patterns:
+          - "Microsoft.Data.Sqlite"
+          - "Microsoft.Extensions.*"
+
+  # Version du SDK .NET (global.json)
+  - package-ecosystem: dotnet-sdk
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Zurich
+    commit-message:
+      prefix: "SDK"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]

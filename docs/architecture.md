@@ -169,6 +169,11 @@ tous les tests ; les résultats (`.trx`) sont joints à l'exécution.
 3. il crée la release GitHub avec une archive par plateforme (`motiwriter-X.Y.Z-<rid>.tar.gz`,
    `.zip` pour Windows), le fichier `SHA256SUMS.txt` et des notes générées depuis les commits.
 
+**`.github/dependabot.yml`** : chaque lundi, Dependabot propose par pull request les mises à
+jour des actions GitHub, des paquets NuGet (regroupés : authentification, tests, runtime) et du
+SDK de `global.json`. Les versions majeures des paquets Microsoft et du SDK sont exclues : elles
+suivent la version de .NET, dont le changement se fait à la main. Chaque pull request passe par la CI.
+
 ## Conventions
 
 - Code, noms de types et de membres en **anglais** ; commentaires, documentation et

@@ -348,4 +348,9 @@ site/                         Site de présentation (GitHub Pages)
 - [Architecture](docs/architecture.md)
 - [Authentification](docs/authentification.md)
 - [Feuille de route](docs/feuille-de-route.md)
-- [Contribuer (humains et agents IA)](AGENTS.md) : ordre de lecture, règles, pièges connus
+- [Consignes de travail (humains et agents IA)](AGENTS.md) : ordre de lecture, règles, pièges connus
+- [Contribuer](CONTRIBUTING.md) · [Code de conduite](CODE_OF_CONDUCT.md) · [Sécurité](SECURITY.md) · [Aide](.github/SUPPORT.md)
+
+## Licence
+
+[MIT](LICENSE) © 2026 Yannick Mauray

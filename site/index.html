@@ -309,7 +309,7 @@
                     et un tableau de bord vous montre le chemin parcouru.
                 </p>
                 <div class="actions">
-                    <a class="button primary" href="#telecharger">Télécharger <span data-version-label>la version 0.1.0</span></a>
+                    <a class="button primary" href="#telecharger">Télécharger <span data-version-label>la version 0.1.1</span></a>
                     <a class="button secondary" href="https://github.com/ymauray/motiwriter">Voir les sources sur GitHub</a>
                 </div>
             </section>
@@ -388,33 +388,33 @@
                 <h2>Télécharger</h2>
                 <div class="block-body">
                     <p>
-                        <span class="version" data-version-title>Version 0.1.0</span> —
+                        <span class="version" data-version-title>Version 0.1.1</span> —
                         un seul exécutable par système, sans rien à installer : .NET y est déjà inclus.
                     </p>
                     <div class="downloads">
-                        <a class="download" data-rid="osx-arm64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/motiwriter-0.1.0-osx-arm64.tar.gz">
+                        <a class="download" data-rid="osx-arm64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.1/motiwriter-0.1.1-osx-arm64.tar.gz">
                             <strong>macOS · Apple Silicon</strong>
                             <span>M1, M2, M3… — tar.gz</span>
                         </a>
-                        <a class="download" data-rid="osx-x64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/motiwriter-0.1.0-osx-x64.tar.gz">
+                        <a class="download" data-rid="osx-x64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.1/motiwriter-0.1.1-osx-x64.tar.gz">
                             <strong>macOS · Intel</strong>
                             <span>tar.gz</span>
                         </a>
-                        <a class="download" data-rid="win-x64" data-ext="zip" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/motiwriter-0.1.0-win-x64.zip">
+                        <a class="download" data-rid="win-x64" data-ext="zip" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.1/motiwriter-0.1.1-win-x64.zip">
                             <strong>Windows</strong>
                             <span>64 bits — zip</span>
                         </a>
-                        <a class="download" data-rid="linux-x64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/motiwriter-0.1.0-linux-x64.tar.gz">
+                        <a class="download" data-rid="linux-x64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.1/motiwriter-0.1.1-linux-x64.tar.gz">
                             <strong>Linux · x64</strong>
                             <span>tar.gz</span>
                         </a>
-                        <a class="download" data-rid="linux-arm64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/motiwriter-0.1.0-linux-arm64.tar.gz">
+                        <a class="download" data-rid="linux-arm64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.1/motiwriter-0.1.1-linux-arm64.tar.gz">
                             <strong>Linux · ARM64</strong>
                             <span>Raspberry Pi 4/5, serveurs ARM — tar.gz</span>
                         </a>
                     </div>
-<pre><code>tar -xzf motiwriter-<span data-version>0.1.0</span>-osx-arm64.tar.gz
-cd motiwriter-<span data-version>0.1.0</span>-osx-arm64
+<pre><code>tar -xzf motiwriter-<span data-version>0.1.1</span>-osx-arm64.tar.gz
+cd motiwriter-<span data-version>0.1.1</span>-osx-arm64
 xattr -d com.apple.quarantine MotiWriter.Web   # macOS : binaire non signé
 ./MotiWriter.Web --urls http://localhost:5000</code></pre>
                     <p>
@@ -424,9 +424,9 @@ xattr -d com.apple.quarantine MotiWriter.Web   # macOS : binaire non signé
                         Les données restent dans <code>App_Data/</code>, à côté de l'exécutable.
                     </p>
                     <p>
-                        <a data-release-link href="https://github.com/ymauray/motiwriter/releases/tag/v0.1.0">Notes de version</a> ·
+                        <a data-release-link href="https://github.com/ymauray/motiwriter/releases/tag/v0.1.1">Notes de version</a> ·
                         <a href="https://github.com/ymauray/motiwriter/releases">toutes les versions</a> ·
-                        <a data-sums-link href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/SHA256SUMS.txt">sommes de contrôle</a>
+                        <a data-sums-link href="https://github.com/ymauray/motiwriter/releases/download/v0.1.1/SHA256SUMS.txt">sommes de contrôle</a>
                     </p>
                 </div>
             </section>
@@ -484,12 +484,12 @@ dotnet run --project src/MotiWriter.Web --launch-profile http
         </footer>
     </div>
     <script>
-        // Les liens pointent sur la 0.1.0 ; s'il existe une version plus récente, on les met à jour.
+        // Les liens pointent sur la 0.1.1 ; s'il existe une version plus récente, on les met à jour.
         fetch("https://api.github.com/repos/ymauray/motiwriter/releases/latest")
             .then(r => r.ok ? r.json() : Promise.reject(r.status))
             .then(release => {
                 const tag = release.tag_name, version = tag.replace(/^v/, "");
-                if (!/^\d+\.\d+\.\d+$/.test(version) || version === "0.1.0") return;
+                if (!/^\d+\.\d+\.\d+$/.test(version) || version === "0.1.1") return;
                 const assets = new Map(release.assets.map(a => [a.name, a.browser_download_url]));
                 document.querySelectorAll("a.download").forEach(a => {
                     const url = assets.get(`motiwriter-${version}-${a.dataset.rid}.${a.dataset.ext}`);
@@ -502,7 +502,7 @@ dotnet run --project src/MotiWriter.Web --launch-profile http
                 document.querySelector("[data-version-label]").textContent = `la version ${version}`;
                 document.querySelectorAll("[data-version]").forEach(e => e.textContent = version);
             })
-            .catch(() => { /* hors ligne ou quota atteint : les liens 0.1.0 restent valables */ });
+            .catch(() => { /* hors ligne ou quota atteint : les liens 0.1.1 restent valables */ });
     </script>
 </body>
 </html>

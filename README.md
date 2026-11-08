@@ -242,7 +242,7 @@ WantedBy=multi-user.target
 sudo systemctl daemon-reload
 sudo systemctl enable --now motiwriter
 systemctl status motiwriter
-curl -sI http://127.0.0.1:5000/connexion          # HTTP/1.1 200 OK
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:5000/connexion   # 200
 journalctl -u motiwriter -f                       # journal en direct
 ```
 

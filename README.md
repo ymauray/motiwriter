@@ -1,5 +1,7 @@
 # MotiWriter
 
+[![CI](https://github.com/ymauray/motiwriter/actions/workflows/ci.yml/badge.svg)](https://github.com/ymauray/motiwriter/actions/workflows/ci.yml)
+
 **Écrire un peu, souvent.**
 
 MotiWriter est une application qui aide à garder l'envie d'écrire en montrant ce qu'on a
@@ -108,6 +110,9 @@ MotiWriter.Web.staticwebassets.endpoints.json    index des fichiers de wwwroot
 - Sous Linux, la bibliothèque ICU (`libicu`) doit être installée pour les dates en français.
 - Pour une mise en ligne (HTTPS, proxy, clés Data Protection), voir
   [docs/authentification.md](docs/authentification.md#mise-en-production).
+
+Chaque passage de la CI publie aussi ces exécutables (Linux, macOS, Windows) : ils se téléchargent
+pendant 14 jours depuis l'onglet *Actions* du dépôt, dans le résumé de l'exécution.
 
 ## Structure
 

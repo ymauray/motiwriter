@@ -214,6 +214,33 @@
             color: var(--accent);
         }
 
+        .downloads {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+        a.download {
+            display: block;
+            padding: 1rem 1.25rem;
+            background: var(--paper-raised);
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+            text-decoration: none;
+            color: var(--ink);
+        }
+        a.download:hover { border-color: var(--ink-blue); }
+        a.download:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        a.download strong { display: block; font-weight: 600; }
+        a.download span { display: block; font-size: 0.85rem; color: var(--ink-muted); }
+        .version {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 1.15rem;
+            color: var(--ink);
+            font-variant-numeric: lining-nums;
+        }
+
         pre {
             margin: 1.5rem 0 0;
             padding: 1.25rem 1.5rem;
@@ -254,7 +281,7 @@
         @media (max-width: 40rem) {
             .wrap { padding: 0 1rem; }
             .masthead { flex-direction: column; gap: 0.5rem; }
-            .masthead nav { gap: 1rem; }
+            .masthead nav { gap: 0.4rem 1rem; flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -265,6 +292,7 @@
             <nav aria-label="Sections">
                 <a href="#intention">Intention</a>
                 <a href="#pour-qui">Pour qui</a>
+                <a href="#telecharger">Télécharger</a>
                 <a href="#etat">État du projet</a>
                 <a href="#sources">Sources</a>
             </nav>
@@ -281,8 +309,8 @@
                     et un tableau de bord vous montre le chemin parcouru.
                 </p>
                 <div class="actions">
-                    <a class="button primary" href="https://github.com/ymauray/motiwriter">Voir les sources sur GitHub</a>
-                    <a class="button secondary" href="#intention">Découvrir l'intention</a>
+                    <a class="button primary" href="#telecharger">Télécharger <span data-version-label>la version 0.1.0</span></a>
+                    <a class="button secondary" href="https://github.com/ymauray/motiwriter">Voir les sources sur GitHub</a>
                 </div>
             </section>
 
@@ -356,15 +384,64 @@
                 </div>
             </section>
 
+            <section class="block" id="telecharger">
+                <h2>Télécharger</h2>
+                <div class="block-body">
+                    <p>
+                        <span class="version" data-version-title>Version 0.1.0</span> —
+                        un seul exécutable par système, sans rien à installer : .NET y est déjà inclus.
+                    </p>
+                    <div class="downloads">
+                        <a class="download" data-rid="osx-arm64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/motiwriter-0.1.0-osx-arm64.tar.gz">
+                            <strong>macOS · Apple Silicon</strong>
+                            <span>M1, M2, M3… — tar.gz</span>
+                        </a>
+                        <a class="download" data-rid="osx-x64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/motiwriter-0.1.0-osx-x64.tar.gz">
+                            <strong>macOS · Intel</strong>
+                            <span>tar.gz</span>
+                        </a>
+                        <a class="download" data-rid="win-x64" data-ext="zip" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/motiwriter-0.1.0-win-x64.zip">
+                            <strong>Windows</strong>
+                            <span>64 bits — zip</span>
+                        </a>
+                        <a class="download" data-rid="linux-x64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/motiwriter-0.1.0-linux-x64.tar.gz">
+                            <strong>Linux · x64</strong>
+                            <span>tar.gz</span>
+                        </a>
+                        <a class="download" data-rid="linux-arm64" data-ext="tar.gz" href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/motiwriter-0.1.0-linux-arm64.tar.gz">
+                            <strong>Linux · ARM64</strong>
+                            <span>Raspberry Pi 4/5, serveurs ARM — tar.gz</span>
+                        </a>
+                    </div>
+<pre><code>tar -xzf motiwriter-<span data-version>0.1.0</span>-osx-arm64.tar.gz
+cd motiwriter-<span data-version>0.1.0</span>-osx-arm64
+xattr -d com.apple.quarantine MotiWriter.Web   # macOS : binaire non signé
+./MotiWriter.Web --urls http://localhost:5000</code></pre>
+                    <p>
+                        La connexion passe par Discord, Twitch, Google ou Apple : il faut déclarer au moins
+                        un de ces fournisseurs, par variables d'environnement (voir le
+                        <a href="https://github.com/ymauray/motiwriter/blob/main/docs/authentification.md">guide de connexion</a>).
+                        Les données restent dans <code>App_Data/</code>, à côté de l'exécutable.
+                    </p>
+                    <p>
+                        <a data-release-link href="https://github.com/ymauray/motiwriter/releases/tag/v0.1.0">Notes de version</a> ·
+                        <a href="https://github.com/ymauray/motiwriter/releases">toutes les versions</a> ·
+                        <a data-sums-link href="https://github.com/ymauray/motiwriter/releases/download/v0.1.0/SHA256SUMS.txt">sommes de contrôle</a>
+                    </p>
+                </div>
+            </section>
+
             <section class="block" id="etat">
                 <h2>État du projet</h2>
                 <div class="block-body">
                     <p>
-                        MotiWriter est <strong>jeune mais utilisable</strong> : on note ses jours, ils sont enregistrés,
+                        MotiWriter est <strong>jeune mais utilisable</strong> : chacun a son compte, note ses jours,
                         et chaque modification est gardée dans un historique. Les statistiques sont encore provisoires.
                     </p>
                     <ul class="plain">
                         <li><span class="tag">Fait</span> Saisie des jours (huit derniers jours, calendrier pleine largeur), historique par mois, enregistrement SQLite</li>
+                        <li><span class="tag">Fait</span> Comptes personnels, connexion sans mot de passe par Discord, Twitch, Google ou Apple</li>
+                        <li><span class="tag">Fait</span> Exécutables autonomes pour macOS, Windows et Linux, publiés à chaque version</li>
                         <li><span class="tag">Ensuite</span> Statistiques définitives, calendrier sur une plus longue période, export des données</li>
                         <li><span class="tag">Plus tard</span> API REST, applications iOS et Android, serveur MCP</li>
                     </ul>
@@ -406,5 +483,26 @@ dotnet run --project src/MotiWriter.Web --launch-profile http
             <p>MotiWriter · <a href="https://github.com/ymauray/motiwriter">sources sur GitHub</a></p>
         </footer>
     </div>
+    <script>
+        // Les liens pointent sur la 0.1.0 ; s'il existe une version plus récente, on les met à jour.
+        fetch("https://api.github.com/repos/ymauray/motiwriter/releases/latest")
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(release => {
+                const tag = release.tag_name, version = tag.replace(/^v/, "");
+                if (!/^\d+\.\d+\.\d+$/.test(version) || version === "0.1.0") return;
+                const assets = new Map(release.assets.map(a => [a.name, a.browser_download_url]));
+                document.querySelectorAll("a.download").forEach(a => {
+                    const url = assets.get(`motiwriter-${version}-${a.dataset.rid}.${a.dataset.ext}`);
+                    if (url) a.href = url;
+                });
+                const sums = assets.get("SHA256SUMS.txt");
+                if (sums) document.querySelector("[data-sums-link]").href = sums;
+                document.querySelector("[data-release-link]").href = release.html_url;
+                document.querySelector("[data-version-title]").textContent = `Version ${version}`;
+                document.querySelector("[data-version-label]").textContent = `la version ${version}`;
+                document.querySelectorAll("[data-version]").forEach(e => e.textContent = version);
+            })
+            .catch(() => { /* hors ligne ou quota atteint : les liens 0.1.0 restent valables */ });
+    </script>
 </body>
 </html>

@@ -155,15 +155,19 @@ de `site/` sur `main` : <https://ymauray.github.io/motiwriter/>.
 
 ## Intégration continue
 
-Le workflow `.github/workflows/ci.yml` tourne à chaque push sur `main` touchant le code (les
-changements limités à `docs/`, `site/` ou aux fichiers Markdown ne le déclenchent pas), à chaque
-pull request et à la demande :
+**`.github/workflows/ci.yml`** tourne à chaque push sur `main` touchant le code (les changements
+limités à `docs/`, `site/` ou aux fichiers Markdown ne le déclenchent pas), à chaque pull request
+et à la demande : compilation en Release avec les avertissements traités comme des erreurs, puis
+tous les tests ; les résultats (`.trx`) sont joints à l'exécution.
 
-1. **Compilation et tests** (Ubuntu) : compilation en Release avec les avertissements traités
-   comme des erreurs, puis tous les tests ; les résultats (`.trx`) sont joints à l'exécution.
-2. **Binaires autonomes** : publication `-r <rid>` pour linux-x64, linux-arm64, osx-arm64,
-   osx-x64 et win-x64, jointe à l'exécution pendant 14 jours. L'exécutable linux-x64 est démarré
-   sur le runner pour vérifier qu'il sert la page de connexion et ses fichiers statiques.
+**`.github/workflows/release.yml`** tourne sur un tag `vX.Y.Z` :
+
+1. il rejoue la CI (workflow réutilisé) ;
+2. il publie les binaires autonomes pour linux-x64, linux-arm64, osx-arm64, osx-x64 et win-x64,
+   avec la version du tag (`-p:Version=X.Y.Z`) ; l'exécutable linux-x64 est démarré sur le runner
+   pour vérifier qu'il sert la page de connexion et ses fichiers statiques ;
+3. il crée la release GitHub avec une archive par plateforme (`motiwriter-X.Y.Z-<rid>.tar.gz`,
+   `.zip` pour Windows), le fichier `SHA256SUMS.txt` et des notes générées depuis les commits.
 
 ## Conventions
 

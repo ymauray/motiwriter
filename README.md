@@ -111,8 +111,15 @@ MotiWriter.Web.staticwebassets.endpoints.json    index des fichiers de wwwroot
 - Pour une mise en ligne (HTTPS, proxy, clés Data Protection), voir
   [docs/authentification.md](docs/authentification.md#mise-en-production).
 
-Chaque passage de la CI publie aussi ces exécutables (Linux, macOS, Windows) : ils se téléchargent
-pendant 14 jours depuis l'onglet *Actions* du dépôt, dans le résumé de l'exécution.
+Les exécutables prêts à l'emploi (Linux, macOS, Windows) sont joints à chaque
+[release](https://github.com/ymauray/motiwriter/releases). Pour en publier une :
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Sur macOS, le binaire n'est pas signé : après extraction, `xattr -d com.apple.quarantine MotiWriter.Web`.
 
 ## Structure
 

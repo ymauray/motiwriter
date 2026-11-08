@@ -84,9 +84,11 @@ public static class AuthenticationSetup
         }
 
         var apple = section.GetSection("Apple");
-        if (HasValues(apple, "ClientId", "TeamId", "KeyId", "PrivateKey"))
+        // La clé .p8 se donne soit en texte (PrivateKey), soit par le chemin du fichier (PrivateKeyPath),
+        // plus pratique sur un serveur : une variable d'environnement sur plusieurs lignes passe mal.
+        var privateKey = ReadApplePrivateKey(apple, builder.Environment.ContentRootPath);
+        if (HasValues(apple, "ClientId", "TeamId", "KeyId") && privateKey is not null)
         {
-            var privateKey = apple["PrivateKey"]!;
             auth.AddApple(options =>
             {
                 options.SignInScheme = ExternalScheme;
@@ -118,6 +120,21 @@ public static class AuthenticationSetup
         var provider = section.GetSection(name);
         client = (provider["ClientId"] ?? "", provider["ClientSecret"] ?? "");
         return HasValues(provider, "ClientId", "ClientSecret");
+    }
+
+    private static string? ReadApplePrivateKey(IConfigurationSection apple, string contentRoot)
+    {
+        if (!string.IsNullOrWhiteSpace(apple["PrivateKey"]))
+        {
+            return apple["PrivateKey"];
+        }
+        var path = apple["PrivateKeyPath"];
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return null;
+        }
+        // Fichier absent ou illisible : erreur au démarrage plutôt qu'à la première connexion.
+        return File.ReadAllText(Path.GetFullPath(path, contentRoot));
     }
 
     private static bool HasValues(IConfigurationSection section, params string[] keys) =>

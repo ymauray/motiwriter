@@ -121,6 +121,197 @@ git push origin v1.0.0
 
 Sur macOS, le binaire n'est pas signé : après extraction, `xattr -d com.apple.quarantine MotiWriter.Web`.
 
+## Installation sur un serveur Ubuntu avec systemd, derrière un reverse proxy nginx
+
+Cette marche à suivre installe une release sur **Ubuntu 24.04** : l'application tourne comme
+service systemd sous un utilisateur dédié, n'écoute que sur `127.0.0.1`, et nginx la publie en
+HTTPS. Dans les exemples, remplacez `motiwriter.exemple.ch` par votre domaine ; il doit déjà
+pointer vers le serveur, ports 80 et 443 ouverts.
+
+| Emplacement | Contenu | Propriétaire |
+|---|---|---|
+| `/opt/motiwriter/current` | lien vers la version installée (exécutable, `wwwroot/`) | root, lecture seule |
+| `/etc/motiwriter/` | configuration et secrets (`motiwriter.env`, clé Apple) | root, lisible par le service |
+| `/var/lib/motiwriter/` | base SQLite et clés Data Protection (cookies de session) | `motiwriter` |
+
+### 1. Paquets
+
+```bash
+sudo apt update
+sudo apt install -y nginx certbot python3-certbot-nginx libicu74   # Ubuntu 22.04 : libicu70
+```
+
+`libicu` fournit les règles du français (dates, noms de mois) à .NET.
+
+### 2. Utilisateur du service
+
+```bash
+sudo useradd --system --home-dir /var/lib/motiwriter --shell /usr/sbin/nologin motiwriter
+sudo install -d -m 755 /opt/motiwriter
+sudo install -d -m 750 -o root -g motiwriter /etc/motiwriter
+```
+
+Le dossier `/var/lib/motiwriter` sera créé par systemd (`StateDirectory`), avec les bons droits.
+
+### 3. Exécutable
+
+```bash
+VERSION=0.1.1
+case "$(dpkg --print-architecture)" in
+  amd64) RID=linux-x64 ;;
+  arm64) RID=linux-arm64 ;;
+esac
+BASE=https://github.com/ymauray/motiwriter/releases/download/v$VERSION
+
+cd /tmp
+curl -fsSLO "$BASE/motiwriter-$VERSION-$RID.tar.gz"
+curl -fsSLO "$BASE/SHA256SUMS.txt"
+sha256sum --check --ignore-missing SHA256SUMS.txt
+
+sudo tar -xzf "motiwriter-$VERSION-$RID.tar.gz" -C /opt/motiwriter
+sudo ln -sfn "/opt/motiwriter/motiwriter-$VERSION-$RID" /opt/motiwriter/current
+```
+
+### 4. Configuration et secrets
+
+Créez `/etc/motiwriter/motiwriter.env` (`sudo nano /etc/motiwriter/motiwriter.env`) en ne
+gardant que les fournisseurs configurés :
+
+```ini
+ASPNETCORE_URLS=http://127.0.0.1:5000
+ConnectionStrings__MotiWriter="Data Source=/var/lib/motiwriter/motiwriter.db"
+
+Authentication__Discord__ClientId=…
+Authentication__Discord__ClientSecret=…
+Authentication__Twitch__ClientId=…
+Authentication__Twitch__ClientSecret=…
+Authentication__Google__ClientId=…
+Authentication__Google__ClientSecret=…
+Authentication__Apple__ClientId=…
+Authentication__Apple__TeamId=…
+Authentication__Apple__KeyId=…
+Authentication__Apple__PrivateKeyPath=/etc/motiwriter/AuthKey_XXXXXXXXXX.p8
+```
+
+```bash
+sudo chmod 600 /etc/motiwriter/motiwriter.env            # lu par systemd (root) seulement
+# Pour Apple, copiez la clé .p8 sur le serveur, puis :
+sudo install -m 640 -o root -g motiwriter AuthKey_XXXXXXXXXX.p8 /etc/motiwriter/
+```
+
+Chez chaque fournisseur, ajoutez l'adresse de retour du serveur :
+`https://motiwriter.exemple.ch/signin-discord` (et `-twitch`, `-google`, `-apple` ; pour Apple,
+le domaine aussi, dans le Services ID). Détails : [docs/authentification.md](docs/authentification.md).
+
+### 5. Service systemd
+
+`/etc/systemd/system/motiwriter.service` :
+
+```ini
+[Unit]
+Description=MotiWriter
+After=network.target
+
+[Service]
+Type=simple
+User=motiwriter
+Group=motiwriter
+ExecStart=/opt/motiwriter/current/MotiWriter.Web
+EnvironmentFile=/etc/motiwriter/motiwriter.env
+# /var/lib/motiwriter : base, clés Data Protection ($HOME/.aspnet) et bibliothèques extraites ($HOME/.net)
+StateDirectory=motiwriter
+StateDirectoryMode=0750
+WorkingDirectory=/var/lib/motiwriter
+Restart=on-failure
+RestartSec=5
+SyslogIdentifier=motiwriter
+
+# Durcissement
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now motiwriter
+systemctl status motiwriter
+curl -sI http://127.0.0.1:5000/connexion          # HTTP/1.1 200 OK
+journalctl -u motiwriter -f                       # journal en direct
+```
+
+### 6. nginx et HTTPS
+
+`/etc/nginx/sites-available/motiwriter` :
+
+```nginx
+# Blazor garde une connexion WebSocket ouverte : il faut relayer l'en-tête Upgrade.
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name motiwriter.exemple.ch;
+
+    location / {
+        proxy_pass         http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade           $http_upgrade;
+        proxy_set_header   Connection        $connection_upgrade;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Forwarded-Host  $host;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_read_timeout 1h;
+    }
+}
+```
+
+```bash
+sudo ln -s /etc/nginx/sites-available/motiwriter /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot --nginx -d motiwriter.exemple.ch --redirect   # certificat Let's Encrypt + redirection HTTPS
+sudo ufw allow 'Nginx Full'                                # si le pare-feu ufw est actif
+```
+
+Certbot ajoute le bloc HTTPS et renouvelle le certificat tout seul. L'application lit les en-têtes
+`X-Forwarded-*` envoyés par nginx (elle ne les accepte que d'un proxy local) : elle sait ainsi
+qu'elle est servie en `https://motiwriter.exemple.ch` et construit les bonnes adresses de retour.
+
+### 7. Mise à jour
+
+```bash
+VERSION=0.2.0   # nouvelle version ; RID et BASE comme à l'étape 3
+# … téléchargement et vérification comme à l'étape 3, puis :
+sudo tar -xzf "motiwriter-$VERSION-$RID.tar.gz" -C /opt/motiwriter
+sudo ln -sfn "/opt/motiwriter/motiwriter-$VERSION-$RID" /opt/motiwriter/current
+sudo systemctl restart motiwriter
+```
+
+La base est mise à niveau automatiquement au démarrage. Pour revenir en arrière, refaites pointer
+`current` vers l'ancien dossier et redémarrez (tant que la nouvelle version n'a pas modifié le
+schéma de la base).
+
+### Sauvegarde
+
+Tout l'état est dans `/var/lib/motiwriter` : la base et les clés qui chiffrent les cookies de
+session (sans elles, chacun doit se reconnecter). Le plus simple :
+
+```bash
+sudo systemctl stop motiwriter
+sudo tar -czf motiwriter-sauvegarde-$(date +%F).tar.gz -C /var/lib motiwriter
+sudo systemctl start motiwriter
+```
+
 ## Structure
 
 ```

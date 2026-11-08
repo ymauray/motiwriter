@@ -141,8 +141,11 @@ dotnet user-secrets set "Authentication:Apple:KeyId"      "XXXXXXXXXX"
 dotnet user-secrets set "Authentication:Apple:PrivateKey" "$(cat ~/chemin/AuthKey_XXXXXXXXXX.p8)"
 ```
 
+Au lieu du contenu de la clé, on peut donner le chemin du fichier : `Authentication:Apple:PrivateKeyPath`
+(relatif au dossier de l'application ou absolu). C'est la forme à préférer sur un serveur.
+
 Rangez ensuite le `.p8` en lieu sûr, hors du dépôt. Le bouton « Continuer avec Apple »
-n'apparaît que si les quatre valeurs sont présentes.
+n'apparaît que si les quatre valeurs sont présentes (`PrivateKey` ou `PrivateKeyPath`).
 
 #### 5. Lancer avec ngrok
 
@@ -193,6 +196,9 @@ Attention : elle crée un compte comme un autre. Si c'est le premier compte de l
 qui adopte les données existantes.
 
 ## Mise en production
+
+Une installation complète (Ubuntu, systemd, nginx, Let's Encrypt) est décrite dans le
+[README](../README.md#installation-sur-un-serveur-ubuntu-avec-systemd-derrière-un-reverse-proxy-nginx).
 
 - Servir l'application **en HTTPS** (les cookies sont marqués *Secure*).
 - **Persister les clés de Data Protection** (qui chiffrent les cookies) dans un dossier durable,

@@ -85,8 +85,16 @@ En production, ajoutez les mêmes chemins sur votre domaine.
 ### Apple
 
 Sign in with Apple demande un **compte Apple Developer payant** et un **vrai domaine en HTTPS** :
-Apple refuse `localhost` comme adresse de retour. Pour tester en local, il faut passer par un
-tunnel HTTPS (Cloudflare Tunnel, ngrok…) et déclarer son domaine.
+Apple refuse `localhost` comme adresse de retour. Pour tester en local, passez par un tunnel HTTPS
+avec un domaine fixe, par exemple le domaine gratuit de ngrok :
+
+```bash
+dotnet run --project src/MotiWriter.Web --launch-profile https
+ngrok http http://localhost:5006 --url=<domaine>.ngrok-free.dev
+```
+
+Ouvrez alors l'application **par l'adresse ngrok** (et non `localhost`), du début à la fin de
+la connexion. L'application tient compte des en-têtes `X-Forwarded-*` envoyés par ngrok.
 
 1. <https://developer.apple.com/account> → **Identifiers** → créez un *App ID* avec la capacité
    *Sign in with Apple*.
@@ -114,5 +122,7 @@ qui adopte les données existantes.
 - Servir l'application **en HTTPS** (les cookies sont marqués *Secure*).
 - **Persister les clés de Data Protection** (qui chiffrent les cookies) dans un dossier durable,
   sinon toutes les sessions sont perdues à chaque redémarrage ou déploiement.
-- Derrière un reverse proxy, activer les *forwarded headers* pour que les adresses de retour
-  soient construites en `https://` avec le bon domaine.
+- Derrière un reverse proxy : l'application lit déjà `X-Forwarded-Proto`, `X-Forwarded-Host` et
+  `X-Forwarded-For`, mais ne les croit que venant d'un proxy local (127.0.0.1, ::1). Si le proxy
+  est sur une autre machine, déclarez son adresse dans `ForwardedHeadersOptions.KnownProxies`
+  (ou `KnownNetworks`), sinon les adresses de retour seront construites en `http://`.

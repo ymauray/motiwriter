@@ -1,4 +1,5 @@
 using System.Globalization;
+using Microsoft.AspNetCore.HttpOverrides;
 using MotiWriter.Core;
 using MotiWriter.Infrastructure;
 using MotiWriter.Web.Authentication;
@@ -25,7 +26,20 @@ builder.Services.AddMotiWriterSqlite(
 // Connexion via Discord, Twitch, Google et Apple (OAuth) ; aucun mot de passe stocké.
 builder.AddMotiWriterAuthentication();
 
+// Derrière un proxy (ngrok, reverse proxy) : l'application doit voir l'adresse publique
+// (https://domaine) et non celle du proxy (http://localhost:5006), sinon la redirection HTTPS
+// boucle et les adresses de retour OAuth sont fausses. Par défaut, seuls les proxys locaux
+// (127.0.0.1, ::1) sont crus ; en production, déclarer les autres dans KnownProxies/KnownNetworks.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor
+                               | ForwardedHeaders.XForwardedProto
+                               | ForwardedHeaders.XForwardedHost;
+});
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 if (!app.Environment.IsDevelopment())
 {

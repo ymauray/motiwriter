@@ -32,6 +32,10 @@ public static class FrenchNumbers
         };
     }
 
+    /// <summary>« Aujourd'hui », « Les huit derniers jours ».</summary>
+    public static string LastDaysTitle(int days) =>
+        days <= 1 ? "Aujourd'hui" : $"Les {InWords(days)} derniers jours";
+
     /// <summary>« La dernière semaine », « Les quarante-deux dernières semaines ».</summary>
     public static string LastWeeksTitle(int weeks) =>
         weeks <= 1 ? "La dernière semaine" : $"Les {InWords(weeks)} dernières semaines";

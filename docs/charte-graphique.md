@@ -61,15 +61,17 @@ Repères :
 ## Composants
 
 - **Ordre du tableau de bord** : surtitre, titre et phrase d'accueil (sur toute la largeur),
-  puis les quatre cartes de statistiques, le calendrier, la bande « Les sept derniers jours »
+  puis les quatre cartes de statistiques, le calendrier, la bande « Les huit derniers jours »
   et les dernières modifications.
 - **Bandeau** : nom de marque à gauche, puis la navigation (« Tableau de bord », « Historique »)
   en italique `--ink-muted` (page active en `--ink`, soulignée en `--accent`), date du jour en
   italique à droite, filet `--rule` en dessous.
-- **Bande « Les sept derniers jours »** (`RecentDays`) : sept pastilles égales, se terminant
-  par aujourd'hui (jour abrégé en italique, numéro en Cormorant, ✓ ou ·). La dernière porte
-  « Aujourd'hui » en gras (« Auj. » sur petit écran). Écrit : plein `--ink-blue` ; non écrit :
-  `--paper-raised` bordé `--rule` ; aujourd'hui : anneau `--accent`.
+- **Bande « Les huit derniers jours »** (`RecentDays`) : huit pastilles égales sur toute la
+  largeur, se terminant par aujourd'hui (jour abrégé en italique, numéro en Cormorant, ✓ ou ·) ;
+  elles ne sont pas carrées, leur largeur suit l'écran. Sous 44rem, elles passent sur deux rangées
+  de quatre (d'où huit jours plutôt que sept). La dernière porte « Aujourd'hui » en gras
+  (« Auj. » sur très petit écran). Écrit : plein `--ink-blue` ; non écrit : `--paper-raised`
+  bordé `--rule` ; aujourd'hui : anneau `--accent`.
 - **Carte de statistique** (`StatCard`) : fond `--paper-raised`, bordure `--rule`, coins à peine
   arrondis (2px), grand chiffre, libellé en gras, légende en italique.
 - **Calendrier** (`WritingCalendar`) : une colonne par semaine (lundi → dimanche), une case

@@ -8,7 +8,7 @@
   jours du mois — couvert par des tests.
 - Tableau de bord : titre, phrase d'encouragement, quatre cartes, calendrier des 20 dernières semaines.
 - Charte graphique crème et encre, typographie serif.
-- **Saisie des jours** : bande « Les sept derniers jours » (dont « Aujourd'hui ») et
+- **Saisie des jours** : bande « Les huit derniers jours » (dont « Aujourd'hui ») et
   calendrier cliquable ; jours futurs refusés.
 - **Historique** de chaque modification (tableau de bord et page dédiée, regroupée par mois).
 - **Stockage SQLite** (`MotiWriter.Infrastructure`) avec schéma versionné.

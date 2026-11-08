@@ -39,18 +39,16 @@ public class DashboardServiceTests
     }
 
     [Fact]
-    public async Task Last_seven_days_end_today()
+    public async Task Recent_days_are_eight_by_default_and_end_today()
     {
-        await _journal.SetWrittenAsync(Today.AddDays(-1), true, Now);
-
-        // Mercredi 4 novembre : du jeudi 29 octobre au mercredi 4 novembre.
-        await _journal.SetWrittenAsync(new DateOnly(2026, 10, 29), true, Now);
+        // Mercredi 4 novembre : du mercredi 28 octobre au mercredi 4 novembre.
+        await _journal.SetWrittenAsync(new DateOnly(2026, 10, 28), true, Now);
         var wednesday = new DashboardService(_journal, new FakeTimeProvider(Now.AddDays(-4)));
 
-        var days = (await wednesday.GetSummaryAsync()).LastSevenDays;
+        var days = (await wednesday.GetSummaryAsync()).RecentDays;
 
-        Assert.Equal(7, days.Count);
-        Assert.Equal(new DateOnly(2026, 10, 29), days[0].Date);
+        Assert.Equal(8, days.Count);
+        Assert.Equal(new DateOnly(2026, 10, 28), days[0].Date);
         Assert.Equal(new DateOnly(2026, 11, 4), days[^1].Date);
         Assert.True(days[0].Written);
         Assert.All(days, d => Assert.False(d.IsFuture));

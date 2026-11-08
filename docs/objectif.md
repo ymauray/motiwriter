@@ -22,7 +22,7 @@ Une seule action — **cocher ou décocher un jour** — accessible à deux endr
 
 | Où | Pour quoi |
 |---|---|
-| La bande **« Les sept derniers jours »**, dont la dernière case s'appelle « Aujourd'hui » | Le geste quotidien, et le rattrapage d'un oubli récent (« j'ai oublié de noter hier »). Grandes pastilles, faciles à toucher sur téléphone. |
+| La bande **« Les huit derniers jours »**, dont la dernière case s'appelle « Aujourd'hui » | Le geste quotidien, et le rattrapage d'un oubli récent (« j'ai oublié de noter hier »). Grandes pastilles, faciles à toucher sur téléphone. |
 | Le **calendrier** des dernières semaines (autant qu'il en tient dans la largeur, jusqu'à un an) | Corriger un jour plus ancien : chaque case se coche ou se décoche d'un clic. |
 
 Les jours futurs ne peuvent pas être cochés.

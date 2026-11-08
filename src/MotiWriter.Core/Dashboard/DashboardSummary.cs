@@ -7,13 +7,13 @@ namespace MotiWriter.Core.Dashboard;
 /// <param name="WrittenToday">Vrai si aujourd'hui est déjà marqué écrit.</param>
 /// <param name="Statistics">Statistiques agrégées.</param>
 /// <param name="Weeks">Calendrier des dernières semaines (lundi → dimanche), la dernière étant la semaine en cours.</param>
-/// <param name="LastSevenDays">Les sept derniers jours, du plus ancien à aujourd'hui inclus.</param>
+/// <param name="RecentDays">Les derniers jours (huit par défaut), du plus ancien à aujourd'hui inclus.</param>
 public sealed record DashboardSummary(
     DateOnly Today,
     bool WrittenToday,
     WritingStatistics Statistics,
     IReadOnlyList<CalendarWeek> Weeks,
-    IReadOnlyList<CalendarDay> LastSevenDays);
+    IReadOnlyList<CalendarDay> RecentDays);
 
 public sealed record CalendarWeek(IReadOnlyList<CalendarDay> Days);
 

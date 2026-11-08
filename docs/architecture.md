@@ -45,7 +45,7 @@ La solution utilise le format `MotiWriter.slnx`. Le SDK est fixé par `global.js
 |---|---|
 | `Journal/` | `IWritingJournal` : contrat de **stockage** (lire les jours, fixer l'état d'un jour, lire l'historique). `IWritingDayService` / `WritingDayService` : **saisie** (cocher, décocher, inverser) et **historique** (liste, ou regroupé par mois avec `HistoryMonth`), avec les règles métier. `WritingDayChange` : une entrée d'historique. `InMemoryWritingJournal` : implémentation en mémoire pour les tests. |
 | `Statistics/` | `WritingStatistics` (record) et `WritingStatisticsCalculator` : **calcul pur**, sans effet de bord, qui prend un ensemble de dates et « aujourd'hui ». |
-| `Dashboard/` | `IDashboardService` / `DashboardService` : assemble tout ce que la page d'accueil affiche dans un seul objet `DashboardSummary` (aujourd'hui écrit ou non, statistiques, calendrier des N dernières semaines, sept derniers jours). |
+| `Dashboard/` | `IDashboardService` / `DashboardService` : assemble tout ce que la page d'accueil affiche dans un seul objet `DashboardSummary` (aujourd'hui écrit ou non, statistiques, calendrier des N dernières semaines, huit derniers jours). |
 | `ServiceCollectionExtensions.cs` | `AddMotiWriterCore()` : enregistre les services métier et `TimeProvider.System`. |
 
 Règles métier :
@@ -102,7 +102,7 @@ La base est en mode WAL.
   (seul le mois en cours est ouvert), rendu statique, sans JavaScript.
 - `Components/Dashboard/` : composants du tableau de bord, sans logique métier, qui signalent
   les clics par un `EventCallback<DateOnly>` :
-  `WritingCalendar` (calendrier cliquable), `RecentDays` (« Les sept derniers jours »), `HistoryList`.
+  `WritingCalendar` (calendrier cliquable), `RecentDays` (« Les huit derniers jours »), `HistoryList`.
 - Le tableau de bord charge 53 semaines ; `WritingCalendar` n'affiche que les plus récentes qui
   tiennent en largeur. Son module JavaScript isolé (`WritingCalendar.razor.js`) mesure le calendrier
   avec un `ResizeObserver` et renvoie le nombre de semaines au composant ; la grille CSS

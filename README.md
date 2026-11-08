@@ -1,6 +1,7 @@
 # MotiWriter
 
 [![CI](https://github.com/ymauray/motiwriter/actions/workflows/ci.yml/badge.svg)](https://github.com/ymauray/motiwriter/actions/workflows/ci.yml)
+[![repocheck](https://img.shields.io/badge/repocheck%201.3.0-100%2F100-brightgreen)](https://github.com/ymauray/repocheck)
 
 **Écrire un peu, souvent.**
 

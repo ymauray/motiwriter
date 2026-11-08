@@ -1,6 +1,7 @@
 # MotiWriter
 
 [![CI](https://github.com/ymauray/motiwriter/actions/workflows/ci.yml/badge.svg)](https://github.com/ymauray/motiwriter/actions/workflows/ci.yml)
+[![repocheck](https://img.shields.io/badge/repocheck%201.3.0-100%2F100-brightgreen)](https://github.com/ymauray/repocheck)
 
 **Écrire un peu, souvent.**
 
@@ -312,6 +313,20 @@ sudo tar -czf motiwriter-sauvegarde-$(date +%F).tar.gz -C /var/lib motiwriter
 sudo systemctl start motiwriter
 ```
 
+## Intégration continue et releases
+
+Tout passe par GitHub Actions ; aucun outil externe n'intervient.
+
+| Workflow | Déclenchement | Rôle |
+|---|---|---|
+| [`ci.yml`](.github/workflows/ci.yml) | push sur `main` (hors changements limités à `docs/`, `site/` et Markdown), pull request, à la demande | compilation Release sans avertissement, tests ; check `Compilation et tests`, requis pour fusionner |
+| [`release.yml`](.github/workflows/release.yml) | tag `vX.Y.Z` | rejoue la CI, publie les exécutables autonomes (Linux, macOS, Windows), essaie celui de Linux, crée la [release](https://github.com/ymauray/motiwriter/releases) avec archives et `SHA256SUMS.txt` |
+| [`pages.yml`](.github/workflows/pages.yml) | push sur `main` touchant `site/`, à la demande | publie le [site de présentation](https://ymauray.github.io/motiwriter/) sur GitHub Pages |
+
+[Dependabot](.github/dependabot.yml) propose chaque semaine les mises à jour des actions, des paquets
+NuGet et du SDK .NET, sous forme de pull requests vérifiées par la CI. Détails :
+[docs/architecture.md](docs/architecture.md#intégration-continue).
+
 ## Structure
 
 ```
@@ -334,4 +349,9 @@ site/                         Site de présentation (GitHub Pages)
 - [Architecture](docs/architecture.md)
 - [Authentification](docs/authentification.md)
 - [Feuille de route](docs/feuille-de-route.md)
-- [Contribuer (humains et agents IA)](AGENTS.md) : ordre de lecture, règles, pièges connus
+- [Consignes de travail (humains et agents IA)](AGENTS.md) : ordre de lecture, règles, pièges connus
+- [Contribuer](CONTRIBUTING.md) · [Code de conduite](CODE_OF_CONDUCT.md) · [Sécurité](SECURITY.md) · [Aide](.github/SUPPORT.md)
+
+## Licence
+
+[MIT](LICENSE) © 2026 Yannick Mauray

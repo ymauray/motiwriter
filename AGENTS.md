@@ -42,7 +42,10 @@ c'est déjà arrivé (une clé Apple, révoquée puis retirée de l'historique).
 
 ### Actions à faire valider
 
-Demander avant : `git push`, création de tag ou de release (un tag `vX.Y.Z` publie une release
+La branche `main` est protégée : pas de push direct ni forcé, le check `Compilation et tests`
+doit être vert. Tout changement passe par une branche et une pull request, fusionnée en squash.
+
+Demander avant : `git push`, ouverture d'une pull request, création de tag ou de release (un tag `vX.Y.Z` publie une release
 publique), réécriture d'historique, fusion d'une pull request, modification des réglages du dépôt
 GitHub, suppression de données. Un accord vaut pour l'action demandée, pas pour les suivantes.
 
@@ -99,7 +102,8 @@ Le développeur fait souvent tourner l'application lui-même sur `http://localho
 2. Mettre à jour les numéros de version écrits en dur dans `site/index.html` (liens de
    téléchargement de secours ; un script les met aussi à jour depuis l'API GitHub) et, si besoin,
    l'exemple `VERSION=` du README.
-3. Après accord : `git tag -a vX.Y.Z -m "MotiWriter X.Y.Z"` puis `git push origin vX.Y.Z`.
+3. Après accord, sur `main` à jour : `git tag -a vX.Y.Z -m "MotiWriter X.Y.Z"` puis
+   `git push origin vX.Y.Z` (les tags ne sont pas soumis à la protection de `main`).
    Le workflow `release.yml` rejoue la CI, fabrique les exécutables et publie la release.
 
 ## 5. Pièges connus

@@ -98,6 +98,7 @@ public static class AuthenticationSetup
                 options.Scope.Clear();
                 options.Scope.Add("openid");
                 options.Scope.Add("name"); // Apple ne transmet le nom qu'à la toute première connexion
+                options.Events.OnCreatingTicket = AppleUserName.AddClaimsAsync;
             });
             providers.Add(new LoginProvider(AppleAuthenticationDefaults.AuthenticationScheme, "Apple"));
         }

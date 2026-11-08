@@ -4,12 +4,18 @@ namespace MotiWriter.Core.Dashboard;
 
 /// <summary>Tout ce dont la page d'accueil a besoin, en un seul objet sérialisable.</summary>
 /// <param name="Today">Date de référence du calcul.</param>
+/// <param name="WrittenToday">Vrai si aujourd'hui est déjà marqué écrit.</param>
 /// <param name="Statistics">Statistiques agrégées.</param>
-/// <param name="Weeks">Calendrier des dernières semaines (lundi → dimanche).</param>
+/// <param name="Weeks">Calendrier des dernières semaines (lundi → dimanche), la dernière étant la semaine en cours.</param>
 public sealed record DashboardSummary(
     DateOnly Today,
+    bool WrittenToday,
     WritingStatistics Statistics,
-    IReadOnlyList<CalendarWeek> Weeks);
+    IReadOnlyList<CalendarWeek> Weeks)
+{
+    /// <summary>La semaine en cours (lundi → dimanche).</summary>
+    public CalendarWeek CurrentWeek => Weeks[^1];
+}
 
 public sealed record CalendarWeek(IReadOnlyList<CalendarDay> Days);
 

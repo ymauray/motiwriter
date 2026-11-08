@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MotiWriter.Core.Dashboard;
+using MotiWriter.Core.Journal;
 
 namespace MotiWriter.Core;
 
@@ -14,6 +15,7 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IWritingDayService, WritingDayService>();
         return services;
     }
 }

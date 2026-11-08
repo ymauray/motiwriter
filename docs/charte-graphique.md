@@ -60,19 +60,36 @@ Repères :
 
 ## Composants
 
-- **Bandeau** : nom de marque à gauche, date du jour en italique à droite, filet `--rule` en dessous.
+- **Bandeau** : nom de marque à gauche, puis la navigation (« Tableau de bord », « Historique »)
+  en italique `--ink-muted` (page active en `--ink`, soulignée en `--accent`), date du jour en
+  italique à droite, filet `--rule` en dessous.
+- **Bouton du jour** (`TodayToggle`) : non coché, contour `--ink-blue` sur `--paper-raised`
+  avec « ✎ J'ai écrit aujourd'hui » ; coché, plein `--ink-blue` avec « ✓ Écrit aujourd'hui ».
+  Une légende en italique dessous (« Quelques mots suffisent. » / « Un clic de plus pour annuler. »).
+- **Bande « Cette semaine »** (`WeekStrip`) : sept pastilles égales (jour abrégé en italique,
+  numéro en Cormorant, ✓ ou ·). Écrit : plein `--ink-blue` ; non écrit : `--paper-raised`
+  bordé `--rule` ; futur : pointillés, non cliquable ; aujourd'hui : anneau `--accent`.
 - **Carte de statistique** (`StatCard`) : fond `--paper-raised`, bordure `--rule`, coins à peine
   arrondis (2px), grand chiffre, libellé en gras, légende en italique.
-- **Calendrier** : une colonne par semaine (lundi → dimanche), une case par jour.
+- **Calendrier** (`WritingCalendar`) : une colonne par semaine (lundi → dimanche), une case
+  par jour, chacune cliquable (léger grossissement au survol, bulle explicative).
   - écrit : `--ink-blue`
   - non écrit (« silence ») : `--paper-deep`
   - futur : transparent, contour pointillé `--rule`
   - aujourd'hui : anneau `--accent`
+- **Liste d'historique** (`HistoryList`) : une ligne par modification, séparées par des filets
+  `--rule`, précédée d'un petit carré (`--ink-blue` pour « écrit », creux pour « non écrit »).
+- **Bandeau d'annulation** (`UndoToast`) : en bas au centre, fond `--ink`, texte `--paper`,
+  « Annuler » souligné en gras. Seule ombre portée de l'interface, très diffuse.
 - **Colophon** : courte devise centrée en italique (« Écrire un peu, souvent. »).
 
 ## Principes
 
-- Pas d'ombres portées marquées, pas de dégradés, pas d'icônes décoratives.
+- Pas d'ombres portées marquées, pas de dégradés, pas d'icônes décoratives
+  (les seuls signes sont typographiques : ✎, ✓, ·).
+- Tout élément cliquable est un vrai bouton : accessible au clavier, avec un anneau de focus
+  `--accent` et un libellé lu par les lecteurs d'écran.
+- Les animations sont brèves et désactivées si l'utilisateur préfère réduire les mouvements.
 - Les coins restent presque droits (2px).
 - La mise en page s'adapte au mobile : le bandeau passe sur deux lignes, les cartes se replient
   en grille automatique, le calendrier défile horizontalement si nécessaire.

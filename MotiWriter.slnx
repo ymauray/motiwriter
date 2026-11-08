@@ -1,9 +1,11 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/MotiWriter.Core/MotiWriter.Core.csproj" />
+    <Project Path="src/MotiWriter.Infrastructure/MotiWriter.Infrastructure.csproj" />
     <Project Path="src/MotiWriter.Web/MotiWriter.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/MotiWriter.Core.Tests/MotiWriter.Core.Tests.csproj" />
+    <Project Path="tests/MotiWriter.Infrastructure.Tests/MotiWriter.Infrastructure.Tests.csproj" />
   </Folder>
 </Solution>

@@ -1,0 +1,32 @@
+@page "/historique"
+@inject IWritingDayService WritingDays
+@inject TimeProvider Clock
+
+<PageTitle>Historique · MotiWriter</PageTitle>
+
+<section class="intro">
+    <p class="eyebrow">Historique</p>
+    <h1>Le fil des jours</h1>
+    <p class="lede">Chaque jour coché ou décoché, du plus récent au plus ancien.</p>
+</section>
+
+<section class="list">
+    <HistoryList Changes="_history" Today="_today" />
+    @if (_history.Count == Limit)
+    {
+        <p class="note">Seules les @Limit dernières modifications sont affichées.</p>
+    }
+</section>
+
+@code {
+    private const int Limit = 500;
+
+    private IReadOnlyList<WritingDayChange> _history = [];
+    private DateOnly _today;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _today = DateOnly.FromDateTime(Clock.GetLocalNow().DateTime);
+        _history = await WritingDays.GetHistoryAsync(Limit);
+    }
+}

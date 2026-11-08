@@ -8,12 +8,16 @@ et un tableau de bord présente le chemin parcouru : jours écrits, séries, cal
 
 🌐 Site de présentation : <https://ymauray.github.io/motiwriter/>
 
-> 🚧 Projet en phase de maquette : les données affichées sont fictives et ne sont pas encore enregistrées.
+> 🚧 Projet jeune : les statistiques du tableau de bord sont encore provisoires.
 
 ## Fonctionnalités
 
+- Un clic pour noter qu'on a écrit aujourd'hui ; rattrapage des jours passés depuis la semaine
+  en cours ou le calendrier ; décocher un jour se fait d'un clic, avec « Annuler ».
+- Historique de chaque modification (« Le mardi 3 novembre a été marqué écrit le dimanche 8 novembre à 19 h 42. »).
 - Tableau de bord : nombre de jours écrits, série en cours, plus longue série, jours du mois.
-- Calendrier des dernières semaines, jour par jour.
+- Calendrier des vingt dernières semaines, jour par jour.
+- Données enregistrées localement dans un fichier SQLite.
 - Interface en français, sobre, dans un esprit « papier et encre ».
 
 Le métier est séparé de l'interface pour pouvoir être exposé plus tard en API REST
@@ -43,6 +47,16 @@ Rechargement à chaud pendant le développement :
 dotnet watch --project src/MotiWriter.Web
 ```
 
+## Données
+
+Les jours sont enregistrés dans `src/MotiWriter.Web/App_Data/motiwriter.db`, créé au premier
+lancement (le dossier est ignoré par git). Pour utiliser un autre fichier :
+
+```bash
+ConnectionStrings__MotiWriter="Data Source=/chemin/vers/motiwriter.db" \
+  dotnet run --project src/MotiWriter.Web --launch-profile http
+```
+
 ## Tests
 
 ```bash
@@ -54,12 +68,14 @@ dotnet test
 ```
 MotiWriter.slnx
 src/
-  MotiWriter.Core/          Métier : journal, statistiques, tableau de bord
-  MotiWriter.Web/           Interface web Blazor (.NET 10)
+  MotiWriter.Core/            Métier : saisie des jours, historique, statistiques, tableau de bord
+  MotiWriter.Infrastructure/  Stockage SQLite
+  MotiWriter.Web/             Interface web Blazor (.NET 10)
 tests/
-  MotiWriter.Core.Tests/    Tests unitaires du métier (xUnit)
-docs/                       Documentation du projet
-site/                       Site de présentation (GitHub Pages)
+  MotiWriter.Core.Tests/            Tests du métier (xUnit)
+  MotiWriter.Infrastructure.Tests/  Tests du stockage SQLite (xUnit)
+docs/                         Documentation du projet
+site/                         Site de présentation (GitHub Pages)
 ```
 
 ## Documentation

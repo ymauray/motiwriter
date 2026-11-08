@@ -1,0 +1,35 @@
+<div class="calendar">
+    <div class="weekdays" aria-hidden="true">
+        <span>lun.</span><span></span><span>mer.</span><span></span><span>ven.</span><span></span><span>dim.</span>
+    </div>
+    @foreach (var week in Weeks)
+    {
+        <div class="week">
+            @foreach (var day in week.Days)
+            {
+                var label = FrenchDates.ToggleLabel(day, Today);
+                <button type="button"
+                        class="@ClassFor(day)"
+                        disabled="@day.IsFuture"
+                        aria-pressed="@(day.Written ? "true" : "false")"
+                        aria-label="@label"
+                        title="@label"
+                        @onclick="() => OnToggle.InvokeAsync(day.Date)"></button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<CalendarWeek> Weeks { get; set; } = [];
+    [Parameter] public DateOnly Today { get; set; }
+    [Parameter] public EventCallback<DateOnly> OnToggle { get; set; }
+
+    private string ClassFor(CalendarDay day) => string.Join(' ', new[]
+    {
+        "cell",
+        day.Written ? "written" : null,
+        day.IsFuture ? "future" : null,
+        day.Date == Today ? "today" : null,
+    }.Where(c => c is not null));
+}

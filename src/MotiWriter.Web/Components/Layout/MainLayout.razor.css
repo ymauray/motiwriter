@@ -25,6 +25,30 @@
     text-decoration: none;
 }
 
+nav {
+    display: flex;
+    gap: 1.5rem;
+    margin-right: auto;
+    margin-left: 2.5rem;
+}
+
+    nav ::deep a {
+        font-style: italic;
+        color: var(--ink-muted);
+        text-decoration: none;
+    }
+
+        nav ::deep a:hover,
+        nav ::deep a.active {
+            color: var(--ink);
+        }
+
+        nav ::deep a.active {
+            text-decoration: underline;
+            text-decoration-color: var(--accent);
+            text-underline-offset: 0.35em;
+        }
+
 .masthead-date {
     font-style: italic;
     color: var(--ink-muted);
@@ -47,7 +71,8 @@ main {
 
 @media (max-width: 40rem) {
     .page { padding: 0 1rem; }
-    .masthead { flex-direction: column; gap: 0.25rem; }
+    .masthead { flex-direction: column; gap: 0.35rem; }
+    nav { margin: 0; }
 }
 
 #blazor-error-ui {

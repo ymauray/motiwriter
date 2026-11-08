@@ -1,0 +1,49 @@
+.today {
+    margin-top: 2rem;
+}
+
+.today-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1.75rem;
+    font: inherit;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink-blue);
+    background: var(--paper-raised);
+    border: 1px solid var(--ink-blue);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+    .today-button:hover {
+        background: var(--paper-deep);
+    }
+
+    .today-button.done {
+        color: var(--paper);
+        background: var(--ink-blue);
+    }
+
+        .today-button.done:hover {
+            background: var(--ink);
+        }
+
+    .today-button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+    }
+
+.mark {
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+.hint {
+    margin: 0.6rem 0 0;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+}

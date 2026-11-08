@@ -14,6 +14,7 @@ public sealed class DashboardService(IWritingJournal journal, TimeProvider timeP
 
         return new DashboardSummary(
             today,
+            days.Contains(today),
             WritingStatisticsCalculator.Compute(days, today),
             BuildCalendar(days, today, weeks));
     }

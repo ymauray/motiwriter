@@ -1,8 +1,7 @@
 using System.Globalization;
 using MotiWriter.Core;
-using MotiWriter.Core.Journal;
+using MotiWriter.Infrastructure;
 using MotiWriter.Web.Components;
-using MotiWriter.Web.Mock;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +15,11 @@ builder.Services.AddRazorComponents()
 // Métier
 builder.Services.AddMotiWriterCore();
 
-// Maquette : journal en mémoire pré-rempli. À remplacer par une vraie persistance.
-builder.Services.AddSingleton<IWritingJournal>(sp =>
-{
-    var today = DateOnly.FromDateTime(TimeProvider.System.GetLocalNow().DateTime);
-    return new InMemoryWritingJournal(SampleWritingDays.Generate(today));
-});
+// Stockage : fichier SQLite (chemin relatif résolu depuis la racine du projet).
+builder.Services.AddMotiWriterSqlite(
+    builder.Configuration.GetConnectionString("MotiWriter")
+        ?? throw new InvalidOperationException("Chaîne de connexion « MotiWriter » manquante."),
+    builder.Environment.ContentRootPath);
 
 var app = builder.Build();
 

@@ -1,21 +1,11 @@
 namespace MotiWriter.Core.Journal;
 
-/// <summary>
-/// Implémentation en mémoire, destinée à la maquette et aux tests.
-/// Sera remplacée par une persistance réelle (SQLite, etc.).
-/// </summary>
+/// <summary>Implémentation en mémoire, destinée aux tests.</summary>
 public sealed class InMemoryWritingJournal : IWritingJournal
 {
     private readonly HashSet<DateOnly> _days = [];
+    private readonly List<WritingDayChange> _history = [];
     private readonly Lock _lock = new();
-
-    public InMemoryWritingJournal(IEnumerable<DateOnly>? seed = null)
-    {
-        if (seed is not null)
-        {
-            _days.UnionWith(seed);
-        }
-    }
 
     public Task<IReadOnlySet<DateOnly>> GetWritingDaysAsync(CancellationToken cancellationToken = default)
     {
@@ -25,21 +15,37 @@ public sealed class InMemoryWritingJournal : IWritingJournal
         }
     }
 
-    public Task MarkAsync(DateOnly day, CancellationToken cancellationToken = default)
+    public Task<bool> IsWrittenAsync(DateOnly day, CancellationToken cancellationToken = default)
     {
         lock (_lock)
         {
-            _days.Add(day);
+            return Task.FromResult(_days.Contains(day));
         }
-        return Task.CompletedTask;
     }
 
-    public Task UnmarkAsync(DateOnly day, CancellationToken cancellationToken = default)
+    public Task<bool> SetWrittenAsync(DateOnly day, bool written, DateTimeOffset changedAt, CancellationToken cancellationToken = default)
     {
         lock (_lock)
         {
-            _days.Remove(day);
+            var changed = written ? _days.Add(day) : _days.Remove(day);
+            if (changed)
+            {
+                _history.Add(new WritingDayChange(day, written, changedAt));
+            }
+            return Task.FromResult(changed);
         }
-        return Task.CompletedTask;
+    }
+
+    public Task<IReadOnlyList<WritingDayChange>> GetHistoryAsync(int limit, CancellationToken cancellationToken = default)
+    {
+        lock (_lock)
+        {
+            IReadOnlyList<WritingDayChange> result = _history
+                .AsEnumerable()
+                .Reverse()
+                .Take(limit)
+                .ToList();
+            return Task.FromResult(result);
+        }
     }
 }

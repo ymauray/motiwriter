@@ -1,6 +1,8 @@
 @page "/"
-@using MotiWriter.Core.Dashboard
+@rendermode InteractiveServer
+@implements IDisposable
 @inject IDashboardService Dashboard
+@inject IWritingDayService WritingDays
 
 <PageTitle>MotiWriter</PageTitle>
 
@@ -10,66 +12,165 @@
         <p class="eyebrow">Tableau de bord</p>
         <h1>MotiWriter</h1>
         <p class="lede">
-            Vous avez écrit <em>@s.Statistics.TotalDays jours</em>.
-            @if (s.Statistics.CurrentStreak > 1)
+            @if (s.Statistics.TotalDays == 0)
             {
-                <span>Votre série en cours dure depuis @s.Statistics.CurrentStreak jours — continuez.</span>
+                <span>Votre carnet est encore vierge. Quelques mots aujourd'hui, et l'aventure commence.</span>
             }
             else
             {
-                <span>Quelques mots aujourd'hui suffisent à relancer la série.</span>
+                <span>Vous avez écrit <em>@FrenchDates.Days(s.Statistics.TotalDays)</em>.</span>
+                @if (s.Statistics.CurrentStreak > 1)
+                {
+                    <span> Votre série en cours dure depuis @FrenchDates.Days(s.Statistics.CurrentStreak) — continuez.</span>
+                }
+                else
+                {
+                    <span> Quelques mots aujourd'hui suffisent à relancer la série.</span>
+                }
             }
         </p>
+        <TodayToggle Written="s.WrittenToday" OnToggle="() => ToggleAsync(s.Today)" />
     </section>
+
+    <WeekStrip Week="s.CurrentWeek" Today="s.Today" OnToggle="ToggleAsync" />
 
     <section class="stats" aria-label="Statistiques">
         <StatCard Value="@s.Statistics.TotalDays" Label="jours écrits" Caption="depuis le début" />
         <StatCard Value="@s.Statistics.CurrentStreak" Label="série en cours" Caption="jours consécutifs" />
         <StatCard Value="@s.Statistics.LongestStreak" Label="plus longue série" Caption="votre record" />
-        <StatCard Value="@s.Statistics.DaysThisMonth" Label="@($"en {s.Today.ToString("MMMM")}")" Caption="@($"sur {s.Today.Day} jours")" />
+        <StatCard Value="@s.Statistics.DaysThisMonth" Label="@($"en {s.Today.ToString("MMMM")}")" Caption="@($"sur {FrenchDates.Days(s.Today.Day)}")" />
     </section>
 
-    <section class="calendar-section">
+    <section class="panel">
         <div class="section-head">
             <h2>Les vingt dernières semaines</h2>
             <div class="legend">
-                <span class="cell"></span> silence
-                <span class="cell written"></span> écrit
+                <span class="swatch"></span> silence
+                <span class="swatch written"></span> écrit
             </div>
         </div>
-
-        <div class="calendar" role="img" aria-label="Calendrier des jours d'écriture">
-            <div class="weekdays">
-                <span>lun.</span><span></span><span>mer.</span><span></span><span>ven.</span><span></span><span>dim.</span>
-            </div>
-            @foreach (var week in s.Weeks)
-            {
-                <div class="week">
-                    @foreach (var day in week.Days)
-                    {
-                        <span class="@CellClass(day, s.Today)"
-                              title="@(day.Date.ToString("dddd d MMMM") + (day.Written ? " — écrit" : ""))"></span>
-                    }
-                </div>
-            }
-        </div>
+        <WritingCalendar Weeks="s.Weeks" Today="s.Today" OnToggle="ToggleAsync" />
+        <p class="note">Cliquez sur un jour pour le cocher ou le décocher.</p>
     </section>
+
+    <section class="panel">
+        <div class="section-head">
+            <h2>Dernières modifications</h2>
+            <a href="historique">Tout l'historique</a>
+        </div>
+        <HistoryList Changes="_history" Today="s.Today" />
+    </section>
+
+    <UndoToast Change="_lastChange" Today="s.Today" OnUndo="UndoAsync" OnDismiss="HideToast"
+               OnPause="CancelToastTimer" OnResume="StartToastTimer" />
 }
 
 @code {
+    private static readonly TimeSpan ToastDuration = TimeSpan.FromSeconds(8);
+
     private DashboardSummary? _summary;
+    private IReadOnlyList<WritingDayChange> _history = [];
+    private WritingDayChange? _lastChange;
+    private CancellationTokenSource? _toastTimer;
+    private bool _busy;
 
-    private static string CellClass(CalendarDay day, DateOnly today) =>
-        string.Join(' ', new[]
-        {
-            "cell",
-            day.Written ? "written" : null,
-            day.IsFuture ? "future" : null,
-            day.Date == today ? "today" : null,
-        }.Where(c => c is not null));
+    protected override Task OnInitializedAsync() => ReloadAsync();
 
-    protected override async Task OnInitializedAsync()
+    private async Task ReloadAsync()
     {
         _summary = await Dashboard.GetSummaryAsync(weeks: 20);
+        _history = await WritingDays.GetHistoryAsync(limit: 5);
     }
+
+    private async Task ToggleAsync(DateOnly day)
+    {
+        if (_busy)
+        {
+            return;
+        }
+        _busy = true;
+        try
+        {
+            var change = await WritingDays.ToggleAsync(day);
+            await ReloadAsync();
+            ShowToast(change);
+        }
+        catch (WritingDayInFutureException)
+        {
+            // Les jours futurs ne sont pas cliquables ; on ignore un éventuel clic tardif
+            // (par exemple si la page est restée ouverte après minuit).
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task UndoAsync()
+    {
+        if (_busy || _lastChange is not { } change)
+        {
+            return;
+        }
+        _busy = true;
+        try
+        {
+            HideToast();
+            await WritingDays.SetWrittenAsync(change.Day, !change.Written);
+            await ReloadAsync();
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private void ShowToast(WritingDayChange change)
+    {
+        _lastChange = change;
+        StartToastTimer();
+    }
+
+    private void StartToastTimer()
+    {
+        CancelToastTimer();
+        if (_lastChange is null)
+        {
+            return;
+        }
+        _toastTimer = new CancellationTokenSource();
+        _ = HideToastLaterAsync(_toastTimer.Token);
+    }
+
+    private async Task HideToastLaterAsync(CancellationToken token)
+    {
+        try
+        {
+            await Task.Delay(ToastDuration, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        await InvokeAsync(() =>
+        {
+            _lastChange = null;
+            StateHasChanged();
+        });
+    }
+
+    private void HideToast()
+    {
+        CancelToastTimer();
+        _lastChange = null;
+    }
+
+    private void CancelToastTimer()
+    {
+        _toastTimer?.Cancel();
+        _toastTimer?.Dispose();
+        _toastTimer = null;
+    }
+
+    public void Dispose() => CancelToastTimer();
 }

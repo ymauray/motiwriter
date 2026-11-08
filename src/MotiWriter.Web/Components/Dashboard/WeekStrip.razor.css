@@ -1,0 +1,86 @@
+.week {
+    margin: 0 0 2.5rem;
+}
+
+h2 {
+    margin: 0 0 0.9rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-style: italic;
+    font-size: 1.5rem;
+    color: var(--ink);
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.6rem;
+    max-width: 44rem;
+}
+
+.day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.7rem 0.25rem 0.6rem;
+    font: inherit;
+    color: var(--ink);
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+    .day:hover:not(:disabled) {
+        border-color: var(--accent);
+    }
+
+    .day:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+
+    .day.written {
+        color: var(--paper);
+        background: var(--ink-blue);
+        border-color: var(--ink-blue);
+    }
+
+    .day.today {
+        box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--accent);
+    }
+
+    .day:disabled {
+        cursor: default;
+        color: var(--ink-muted);
+        background: transparent;
+        border-style: dashed;
+    }
+
+.dow {
+    font-size: 0.8rem;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.num {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1.1;
+    font-variant-numeric: lining-nums;
+}
+
+.state {
+    font-size: 0.9rem;
+    line-height: 1;
+    min-height: 1em;
+}
+
+@media (max-width: 30rem) {
+    .days { gap: 0.3rem; }
+    .day { padding: 0.55rem 0 0.5rem; }
+    .num { font-size: 1.3rem; }
+}

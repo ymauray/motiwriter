@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MotiWriter.Core\MotiWriter.Core.csproj" />
+    <ProjectReference Include="..\MotiWriter.Infrastructure\MotiWriter.Infrastructure.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,0 +1,21 @@
+@if (Changes.Count == 0)
+{
+    <p class="empty">Aucune modification pour l'instant. Votre premier jour coché apparaîtra ici.</p>
+}
+else
+{
+    <ol class="history">
+        @foreach (var change in Changes)
+        {
+            <li class="@(change.Written ? "written" : "unwritten")">
+                <span class="dot" aria-hidden="true"></span>
+                <span>@FrenchDates.Describe(change, Today)</span>
+            </li>
+        }
+    </ol>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<WritingDayChange> Changes { get; set; } = [];
+    [Parameter] public DateOnly Today { get; set; }
+}

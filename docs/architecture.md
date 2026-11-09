@@ -46,7 +46,8 @@ La solution utilise le format `MotiWriter.slnx`. Le SDK est fixé par `global.js
 | `Accounts/` | `UserId`, `UserAccount`, `ExternalIdentity`. `IUserAccountStore` : stockage des comptes et des connexions externes. `IAccountService` / `AccountService` : retrouve ou crée le compte à la connexion, rafraîchit le nom sans jamais l'effacer. |
 | `Journal/` | `IWritingJournal` : contrat de **stockage** (lire les jours, fixer l'état d'un jour, lire l'historique). `IWritingDayService` / `WritingDayService` : **saisie** (cocher, décocher, inverser) et **historique** (liste, ou regroupé par mois avec `HistoryMonth`), avec les règles métier. `WritingDayChange` : une entrée d'historique. `InMemoryWritingJournal` : implémentation en mémoire pour les tests. |
 | `Statistics/` | `WritingStatistics` (record) et `WritingStatisticsCalculator` : **calcul pur**, sans effet de bord, qui prend un ensemble de dates et « aujourd'hui ». |
-| `Dashboard/` | `IDashboardService` / `DashboardService` : assemble tout ce que la page d'accueil affiche dans un seul objet `DashboardSummary` (aujourd'hui écrit ou non, statistiques, calendrier des N dernières semaines, huit derniers jours). |
+| `Dashboard/` | `IDashboardService` / `DashboardService` : assemble tout ce que la page d'accueil affiche dans un seul objet `DashboardSummary` (aujourd'hui écrit ou non, statistiques, calendrier des N dernières semaines, huit derniers jours, message du jour). |
+| `Messages/` | `DailyMessages` : la liste des messages d'encouragement et le **message du jour**, calculé à partir de la date seule (le même pour tout le monde, chaque message une fois par cycle). |
 | `ServiceCollectionExtensions.cs` | `AddMotiWriterCore()` : enregistre les services métier et `TimeProvider.System`. |
 
 Règles métier :

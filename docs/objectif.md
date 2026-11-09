@@ -14,6 +14,8 @@ de continuer. L'application ne juge pas, elle **constate et encourage**.
   Quelques mots suffisent pour que la journée compte.
 - La page d'accueil est un **tableau de bord** qui présente le travail accompli :
   statistiques et calendrier des jours écrits.
+- Sous le titre, dès que le carnet n'est plus vide, un **message du jour** encourage à écrire.
+  Il change chaque jour et c'est le même pour tout le monde.
 - Chaque modification est conservée dans un **historique**.
 
 ## Noter ses jours

@@ -29,6 +29,10 @@
                 }
             }
         </p>
+        @if (s.Statistics.TotalDays > 0)
+        {
+            <p class="daily-message">@s.DailyMessage</p>
+        }
     </section>
 
     <section class="stats" aria-label="Statistiques">

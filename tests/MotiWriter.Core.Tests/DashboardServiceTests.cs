@@ -2,6 +2,7 @@ using MotiWriter.Core.Accounts;
 using Microsoft.Extensions.Time.Testing;
 using MotiWriter.Core.Dashboard;
 using MotiWriter.Core.Journal;
+using MotiWriter.Core.Messages;
 
 namespace MotiWriter.Core.Tests;
 
@@ -29,6 +30,12 @@ public class DashboardServiceTests
         await _journal.SetWrittenAsync(Alice, Today, true, Now);
 
         Assert.True((await _service.GetSummaryAsync(Alice)).WrittenToday);
+    }
+
+    [Fact]
+    public async Task Includes_the_message_of_the_day()
+    {
+        Assert.Equal(DailyMessages.For(Today), (await _service.GetSummaryAsync(Alice)).DailyMessage);
     }
 
     [Fact]

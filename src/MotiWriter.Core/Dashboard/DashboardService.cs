@@ -1,5 +1,6 @@
 using MotiWriter.Core.Accounts;
 using MotiWriter.Core.Journal;
+using MotiWriter.Core.Messages;
 using MotiWriter.Core.Statistics;
 
 namespace MotiWriter.Core.Dashboard;
@@ -19,7 +20,8 @@ public sealed class DashboardService(IWritingJournal journal, TimeProvider timeP
             days.Contains(today),
             WritingStatisticsCalculator.Compute(days, today),
             BuildCalendar(days, today, weeks),
-            BuildLastDays(days, today, recentDays));
+            BuildLastDays(days, today, recentDays),
+            DailyMessages.For(today));
     }
 
     private static List<CalendarDay> BuildLastDays(IReadOnlySet<DateOnly> days, DateOnly today, int count) =>

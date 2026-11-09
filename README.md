@@ -19,6 +19,7 @@ et un tableau de bord présente le chemin parcouru : jours écrits, séries, cal
   derniers jours ou le calendrier ; décocher un jour se fait d'un clic.
 - Historique de chaque modification, mois par mois (« Le mardi 3 novembre a été marqué écrit le dimanche 8 novembre à 19 h 42. »).
 - Tableau de bord : nombre de jours écrits, série en cours, plus longue série, jours du mois.
+- Un message d'encouragement chaque jour, le même pour tout le monde.
 - Calendrier jour par jour, qui remplit toute la largeur de l'écran (jusqu'à un an).
 - Connexion avec Discord, Twitch, Google ou Apple, sans mot de passe ; chaque personne ne voit que ses jours.
 - Données enregistrées dans un fichier SQLite.

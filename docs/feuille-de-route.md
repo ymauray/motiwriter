@@ -9,6 +9,7 @@
 - Tableau de bord : titre, phrase d'encouragement, quatre cartes, calendrier aux cases carrées
   qui remplit toute la largeur (jusqu'à un an).
 - Charte graphique crème et encre, typographie serif.
+- **Message du jour** sous le titre, tiré d'une liste écrite pour MotiWriter.
 - **Saisie des jours** : bande « Les huit derniers jours » (dont « Aujourd'hui ») et
   calendrier cliquable ; jours futurs refusés.
 - **Historique** de chaque modification (tableau de bord et page dédiée, regroupée par mois).

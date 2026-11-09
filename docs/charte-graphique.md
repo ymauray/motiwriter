@@ -60,9 +60,11 @@ Repères :
 
 ## Composants
 
-- **Ordre du tableau de bord** : surtitre, titre et phrase d'accueil (sur toute la largeur),
+- **Ordre du tableau de bord** : surtitre, titre, phrase d'accueil et message du jour (sur toute la largeur),
   puis les quatre cartes de statistiques, le calendrier, la bande « Les huit derniers jours »
   et les dernières modifications.
+- **Message du jour** : sous la phrase d'accueil, en Cormorant italique `--ink-soft`, 1.35rem ;
+  absent tant que le carnet est vide.
 - **Bandeau** : nom de marque à gauche, puis la navigation (« Tableau de bord », « Historique »)
   en italique `--ink-muted` (page active en `--ink`, soulignée en `--accent`), date du jour en
   italique à droite, filet `--rule` en dessous.

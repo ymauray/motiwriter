@@ -32,6 +32,15 @@ h1 {
         color: var(--ink);
     }
 
+.daily-message {
+    margin: 1rem 0 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.35rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+}
+
 .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
